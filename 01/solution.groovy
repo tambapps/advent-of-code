@@ -14,6 +14,4 @@ list.sort { - it }
 // keeping only the 3 highest numbers
 list = list[0..2]
 println "The 3 highest numbers of calories transported are\n- " + list.join('\n- ')
-
-
 println "\nSum: " + list.sum()
