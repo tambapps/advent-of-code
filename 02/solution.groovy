@@ -1,4 +1,3 @@
-#!/bin/env groovy
 File f = new File('input.txt')
 int part1Score = 0
 int part2Score = 0

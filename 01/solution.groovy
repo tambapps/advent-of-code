@@ -1,4 +1,3 @@
-#!/bin/env groovy
 f = new File('input.txt')
 
 list = [0]
