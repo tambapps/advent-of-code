@@ -54,21 +54,22 @@ for (def line in moves) {
   def (_, countStr, fromStr, toStr) = (line =~ /move\s(\d+)\sfrom\s(\d+)\sto\s(\d+)/)[0]
   def (count, from, to) = [countStr, fromStr, toStr].collect(Integer.&parseInt)
   // substracting 1 because we're dealing with indexes which start at 0
-  stacks1.moveWeirdly(count.toInteger(), from - 1, to - 1)
-  stacks2.move(count.toInteger(), from - 1, to - 1)
-  println stacks1
-  return
+  stacks1.move1(count.toInteger(), from - 1, to - 1)
+  stacks2.move2(count.toInteger(), from - 1, to - 1)
 }
 
 println "Part 1: stacks final state"
 println stacks1
+println "Top crates: " + (0..<nbStacks).collect(stacks1.&top).join('')
 
 println "\n\nPart 2: stacks final state"
 println stacks2
+println "Top crates: " + (0..<nbStacks).collect(stacks2.&top).join('')
 
 
 class Stacks {
-  private final List<LinkedList<Character>> stacks = [];
+  private final List<LinkedList<Character>> stacks = []
+
   Stacks(int n) {
     for (def i in 0..<n) stacks << new LinkedList<Character>();
   }
@@ -81,14 +82,14 @@ class Stacks {
   }
 
   // for part 1, which moves crates in a weird way
-  void moveWeirdly(int count, int from, int to) {
-   def crates = []
-   count.times { crates.add(0, stacks[from].pop()) }
-   crates.each { stacks[to] << it }
+  void move1(int count, int from, int to) {
+    count.times { stacks[to] << stacks[from].removeLast() }
   }
-  
-  void move(int count, int from, int to) {
-    count.times { stacks[to] << stacks[from].pop() }
+
+  void move2(int count, int from, int to) {
+   def crates = []
+   count.times { crates.add(0, stacks[from].removeLast()) }
+   crates.each { stacks[to] << it }
   }
 
   Character top(int i) {
