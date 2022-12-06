@@ -8,7 +8,7 @@ for (String line in f.readLines()) {
   IntRange range2 = r2From.toInteger()..r2To.toInteger()
 
   if (range1.containsAll(range2) || range2.containsAll(range1)) part1Count++
-  if (range1.any(range2.&contains) || range2.any(range1.&contains)) part2Count++
+  if (!range1.intersect(range2).isEmpty()) part2Count++
 }
 
 println("Part 1: $part1Count assignements have one range that fully contains the other")
