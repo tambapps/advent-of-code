@@ -1,5 +1,5 @@
 # Advent Of Code
 
-Here is my version of the Advent of Code 2022
+Doing the [advent of code](https://adventofcode.com) 2022 using Groovy.
 
-Solutions are implemented in Groovy
+Let's explore features of this programming language
