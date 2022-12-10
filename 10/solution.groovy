@@ -38,8 +38,5 @@ void nextCycle(int value = 0) {
 println("Part 1: the sum of these six signal strengths is $sum")
 println("Part 2: CRT output")
 for (def j in 0..<HEIGHT) {
-  for (def i in 0..<WIDTH) {
-    print(crt[j * WIDTH + i])
-  }
-  println()
+  println(crt[(j * WIDTH)..<((j + 1) * WIDTH)].join())
 }
