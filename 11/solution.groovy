@@ -1,6 +1,5 @@
 // use TrackedNumber because in part 2, we have ridiculously enormous worry levels
 List<Monkey> monkeys = []
-
 new File('input.txt').newReader().with {
   while (readLine() != null) {
     Monkey monkey = new Monkey()
@@ -14,150 +13,137 @@ new File('input.txt').newReader().with {
   }
 }
 
-TrackedNumber.REPRESENTATIONS_TO_SAVE = monkeys*.divisible
-
-if (true) {
-  // TODO delete these tests
-  int n = 79 + 23
-  TrackedNumber number = new TrackedNumber(79) + new TrackedNumber(23)
-  number.savedRepresentations.each { Number d, EuclideanDivision it ->
-    println("$n = ${it.d} * ${it.quotient} + ${it.rest}? " + (n == (it.d * it.quotient + it.rest)))
-  }
-
-  println()
-
-  n = 79 * 23
-  number = new TrackedNumber(79) * new TrackedNumber(23)
-  number.savedRepresentations.each { Number d, EuclideanDivision it ->
-    println("$n = ${it.d} * ${it.quotient} + ${it.rest}? " + (n == (it.d * it.quotient + it.rest)))
-  }
-//  return
-}
-
+RepresentedNumber.REPRESENTATIONS_TO_SAVE = monkeys*.divisible
 
 for (int part in [1, 2]) {
   monkeys*.reset()
   Map<Integer, Long> inspectionCountByMonkey = [:].withDefault { 0L }
-  int n = part == 1 ? 20 : 10_000//10_000
+  int n = part == 1 ? 20 : 10_000
   n.times { runRound(monkeys, part == 1, inspectionCountByMonkey) }
   Long monkeyBusiness = inspectionCountByMonkey.values()
       .sort { -it }[0..1]
       .inject {i1, i2 -> i1 * i2 }
 
+  println("Part $part")
   inspectionCountByMonkey.each { int index, Long inspectedItemCount ->
     println("Monkey $index inspected items $inspectedItemCount times.")
   }
-  println("Part $part: the level of monkey business after $n rounds is $monkeyBusiness")
+  println("The level of monkey business after $n rounds is $monkeyBusiness")
   println()
 }
 
 static void runRound(List<Monkey> monkeys, boolean divideBy3, Map<Integer, Long> inspectionCountByMonkey) {
   monkeys.eachWithIndex { Monkey monkey, int i ->
     for (def item in monkey.items) {
-      TrackedNumber updatedItem = monkey.inspect(item, divideBy3)
+      RepresentedNumber updatedItem = monkey.inspect(item, divideBy3)
       int targetMonkey = monkey.targetMonkey(updatedItem)
       monkeys[targetMonkey].items << updatedItem
       inspectionCountByMonkey[i]+= 1
-//      println("${monkey.id} threw $updatedItem (previously $item) to monkey $targetMonkey")
     }
     monkey.items.clear()
   }
 }
 
-static Closure<TrackedNumber> parseOperation(String operation) {
+static Closure<RepresentedNumber> parseOperation(String operation) {
   Scanner scanner = new Scanner(operation)
-  Closure<TrackedNumber> n1 = numberClosure(scanner.next())
-  Closure<TrackedNumber> operator = switch (scanner.next()) {
+  Closure<RepresentedNumber> n1 = numberClosure(scanner.next())
+  Closure<RepresentedNumber> operator = switch (scanner.next()) {
     case '*' -> { i1, i2 -> i1 * i2 }
     default -> { i1, i2 -> i1 + i2 }
   }
-  Closure<TrackedNumber> n2 = numberClosure(scanner.next())
+  Closure<RepresentedNumber> n2 = numberClosure(scanner.next())
   return { item ->
     operator(n1(item), n2(item))
   }
 }
 
-static Closure<TrackedNumber> numberClosure(String input) {
-  return input ==~ /\d+/ ? { new TrackedNumber(input.toInteger()) } : { it }
+static Closure<RepresentedNumber> numberClosure(String input) {
+  // can be a number or 'old', which references to the current item being handled
+  return input ==~ /\d+/ ? { new RepresentedNumber(input.toInteger()) } : { it }
 }
 
 class Monkey {
-  List<Integer> initialItems
-  List<TrackedNumber> items
-  Closure<TrackedNumber> operation // takes in parameter the item to throw
+  List<Integer> initialItems // or rather the worried level of the item
+  List<RepresentedNumber> items
+  Closure<RepresentedNumber> operation // takes in parameter the item to throw to another monkey
   Integer divisible
   Integer trueMonkey
   Integer falseMonkey
 
-  int targetMonkey(TrackedNumber item) {
+  int targetMonkey(RepresentedNumber item) {
     return item % divisible == 0 ? trueMonkey : falseMonkey
   }
 
-  TrackedNumber inspect(TrackedNumber item, boolean divideBy3) {
-    TrackedNumber result = operation(item)
+  RepresentedNumber inspect(RepresentedNumber item, boolean divideBy3) {
+    RepresentedNumber result = operation(item)
     return divideBy3 ? result / 3 : result
   }
 
   void reset() {
-    items = initialItems.collect {new TrackedNumber(it) }
+    items = initialItems.collect {new RepresentedNumber(it) }
   }
 }
 
 /**
- * Represents an euclidean division: value = d * quotient + rest
+ * Represents an euclidean division: value = divider * quotient + rest
  */
 class EuclideanDivision {
-  final long d
+  final long divider
   final long quotient
   final long rest
 
-  EuclideanDivision(Number d, Number quotient, Number rest) {
-    this.d = d.longValue()
+  EuclideanDivision(Number divider, Number quotient, Number rest) {
+    this.divider = divider.longValue()
     this.quotient = quotient.longValue()
     this.rest = rest.longValue()
+  }
+
+  static EuclideanDivision compute(Number n, Number divider) {
+    return new EuclideanDivision(divider, n / divider, n % divider)
   }
 
   EuclideanDivision simplify() {
     long rest = this.rest
     long quotient = this.quotient
-    while (rest >= d) {
-      rest -= d
+    while (rest >= divider) {
+      rest -= divider
       quotient++
     }
-    return new EuclideanDivision(d, quotient, rest)
+    return new EuclideanDivision(divider, quotient, rest)
   }
 
+  // the dividend
   BigDecimal getValue() {
     // returning bigDecimal as it may not fit in an int/long
-    return (new BigDecimal(quotient) * new BigDecimal(d)) + new BigDecimal(rest)
+    return (new BigDecimal(quotient) * new BigDecimal(divider)) + new BigDecimal(rest)
   }
 }
-class TrackedNumber {
+class RepresentedNumber {
   static List<Integer> REPRESENTATIONS_TO_SAVE // we will save all Monkey Test: euclidean divisions
-  private Map<Number, EuclideanDivision> savedRepresentations = [:]
+  private Map<Number, EuclideanDivision> euclideanDivisions = [:]
 
-  private TrackedNumber() {}
+  private RepresentedNumber() {}
 
-  TrackedNumber(Long n) {
-    REPRESENTATIONS_TO_SAVE.each { savedRepresentations[it] = computeRepresentation(n, it) }
+  RepresentedNumber(Number n) {
+    REPRESENTATIONS_TO_SAVE.each { euclideanDivisions[it] = EuclideanDivision.compute(n, it) }
   }
 
   BigDecimal getValue() {
-    return savedRepresentations.values().first().value
+    // should all be the same so let's just return the first
+    return euclideanDivisions.values().first().value
   }
 
   // n1 = d * q1 + r1
   // n2 = d * q2 + r2
-
   // (n1 + n2) = (q1 + q2) * d + (r1 + r2)
-  TrackedNumber plus(TrackedNumber other) {
+  RepresentedNumber plus(RepresentedNumber other) {
     Map<Number, EuclideanDivision> savedRepresentations = [:]
     REPRESENTATIONS_TO_SAVE.each { Number d ->
-      EuclideanDivision a1 = this.savedRepresentations[d]
-      EuclideanDivision a2 = other.savedRepresentations[d]
+      EuclideanDivision a1 = this.euclideanDivisions[d]
+      EuclideanDivision a2 = other.euclideanDivisions[d]
       savedRepresentations[d] = new EuclideanDivision(d, a1.quotient + a2.quotient, a1.rest + a2.rest).simplify()
     }
-    return new TrackedNumber(savedRepresentations: savedRepresentations)
+    return new RepresentedNumber(euclideanDivisions: savedRepresentations)
   }
 
   // n1 = d * q1 + r1
@@ -165,31 +151,28 @@ class TrackedNumber {
   // (n1 * n2) = (d * q1 + r1) * (d * q2 + r2)
   //           = d * d  * q1 * q2 + d * q1 * r2 + r1 * d * q2 + r1 * r2
   //           = d * ((d * q1 * q2) + (q1 * r2) + (r1 * q2)) + r1 * r2
-  TrackedNumber multiply(TrackedNumber other) {
+  RepresentedNumber multiply(RepresentedNumber other) {
     Map<Number, EuclideanDivision> savedRepresentations = [:]
     REPRESENTATIONS_TO_SAVE.each { Number d ->
-      EuclideanDivision a1 = this.savedRepresentations[d]
-      EuclideanDivision a2 = other.savedRepresentations[d]
+      EuclideanDivision a1 = this.euclideanDivisions[d]
+      EuclideanDivision a2 = other.euclideanDivisions[d]
       savedRepresentations[d] = new EuclideanDivision(d,
           (d * a1.quotient * a2.quotient) + (a1.quotient * a2.rest) + (a2.quotient * a1.rest),
           a1.rest * a2.rest).simplify()
     }
-    return new TrackedNumber(savedRepresentations: savedRepresentations)
+    return new RepresentedNumber(euclideanDivisions: savedRepresentations)
   }
 
-  TrackedNumber div(Integer other) {
-    return new TrackedNumber((value / other).longValue())
+  RepresentedNumber div(Integer other) { // needed because we divide by 3 for part 1
+    return new RepresentedNumber((value / other).longValue())
   }
 
-  int mod(int n) {
-    EuclideanDivision number = savedRepresentations[n]
+  long mod(int n) {
+    EuclideanDivision number = euclideanDivisions[n]
     if (number == null) {
-      throw new RuntimeException("Didn't save representation of $n")
+      throw new RuntimeException("Didn't save representation of euclidean division by $n")
     }
     return number.rest
   }
 
-  private static EuclideanDivision computeRepresentation(Number n, Number divider) {
-    return new EuclideanDivision(divider, n.longValue() / divider, n.longValue() % divider)
-  }
 }
