@@ -15,11 +15,12 @@ new File('input.txt').newReader().with {
 }
 
 TrackedNumber.REPRESENTATIONS_TO_SAVE = monkeys*.divisible
+
 if (true) {
   // TODO delete these tests
   int n = 79 + 23
   TrackedNumber number = new TrackedNumber(79) + new TrackedNumber(23)
-  number.savedRepresentations.each { Number d, ArithmeticNumber it ->
+  number.savedRepresentations.each { Number d, EuclideanDivision it ->
     println("$n = ${it.d} * ${it.quotient} + ${it.rest}? " + (n == (it.d * it.quotient + it.rest)))
   }
 
@@ -27,7 +28,7 @@ if (true) {
 
   n = 79 * 23
   number = new TrackedNumber(79) * new TrackedNumber(23)
-  number.savedRepresentations.each { Number d, ArithmeticNumber it ->
+  number.savedRepresentations.each { Number d, EuclideanDivision it ->
     println("$n = ${it.d} * ${it.quotient} + ${it.rest}? " + (n == (it.d * it.quotient + it.rest)))
   }
 //  return
@@ -102,31 +103,38 @@ class Monkey {
   }
 }
 
-class ArithmeticNumber {
-  final int d
-  ArithmeticNumber(Map otherProperties, Number d) {
-    this.d = d.intValue()
-    quotient = otherProperties.quotient as int
-    rest = otherProperties.rest as int
-  }
-  int quotient
-  int rest
+/**
+ * Represents an euclidean division: value = d * quotient + rest
+ */
+class EuclideanDivision {
+  final long d
+  final long quotient
+  final long rest
 
-  ArithmeticNumber simplify() {
+  EuclideanDivision(Number d, Number quotient, Number rest) {
+    this.d = d.longValue()
+    this.quotient = quotient.longValue()
+    this.rest = rest.longValue()
+  }
+
+  EuclideanDivision simplify() {
+    long rest = this.rest
+    long quotient = this.quotient
     while (rest >= d) {
       rest -= d
       quotient++
     }
-    return this
+    return new EuclideanDivision(d, quotient, rest)
   }
 
   BigDecimal getValue() {
+    // returning bigDecimal as it may not fit in an int/long
     return (new BigDecimal(quotient) * new BigDecimal(d)) + new BigDecimal(rest)
   }
 }
 class TrackedNumber {
-  static List<Integer> REPRESENTATIONS_TO_SAVE
-  Map<Number, ArithmeticNumber> savedRepresentations = [:]
+  static List<Integer> REPRESENTATIONS_TO_SAVE // we will save all Monkey Test: euclidean divisions
+  private Map<Number, EuclideanDivision> savedRepresentations = [:]
 
   private TrackedNumber() {}
 
@@ -137,34 +145,34 @@ class TrackedNumber {
   BigDecimal getValue() {
     return savedRepresentations.values().first().value
   }
+
   // n1 = d * q1 + r1
   // n2 = d * q2 + r2
 
   // (n1 + n2) = (q1 + q2) * d + (r1 + r2)
   TrackedNumber plus(TrackedNumber other) {
-    Map<Number, ArithmeticNumber> savedRepresentations = [:]
+    Map<Number, EuclideanDivision> savedRepresentations = [:]
     REPRESENTATIONS_TO_SAVE.each { Number d ->
-      ArithmeticNumber a1 = this.savedRepresentations[d]
-      ArithmeticNumber a2 = other.savedRepresentations[d]
-      savedRepresentations[d] = new ArithmeticNumber(d, quotient: a1.quotient + a2.quotient, rest: a1.rest + a2.rest).simplify()
+      EuclideanDivision a1 = this.savedRepresentations[d]
+      EuclideanDivision a2 = other.savedRepresentations[d]
+      savedRepresentations[d] = new EuclideanDivision(d, a1.quotient + a2.quotient, a1.rest + a2.rest).simplify()
     }
     return new TrackedNumber(savedRepresentations: savedRepresentations)
   }
 
   // n1 = d * q1 + r1
   // n2 = d * q2 + r2
-
   // (n1 * n2) = (d * q1 + r1) * (d * q2 + r2)
   //           = d * d  * q1 * q2 + d * q1 * r2 + r1 * d * q2 + r1 * r2
   //           = d * ((d * q1 * q2) + (q1 * r2) + (r1 * q2)) + r1 * r2
   TrackedNumber multiply(TrackedNumber other) {
-    Map<Number, ArithmeticNumber> savedRepresentations = [:]
+    Map<Number, EuclideanDivision> savedRepresentations = [:]
     REPRESENTATIONS_TO_SAVE.each { Number d ->
-      ArithmeticNumber a1 = this.savedRepresentations[d]
-      ArithmeticNumber a2 = other.savedRepresentations[d]
-      savedRepresentations[d] = new ArithmeticNumber(d,
-          quotient:(d * a1.quotient * a2.quotient) + (a1.quotient * a2.rest) + (a2.quotient * a1.rest),
-          rest: a1.rest * a2.rest).simplify()
+      EuclideanDivision a1 = this.savedRepresentations[d]
+      EuclideanDivision a2 = other.savedRepresentations[d]
+      savedRepresentations[d] = new EuclideanDivision(d,
+          (d * a1.quotient * a2.quotient) + (a1.quotient * a2.rest) + (a2.quotient * a1.rest),
+          a1.rest * a2.rest).simplify()
     }
     return new TrackedNumber(savedRepresentations: savedRepresentations)
   }
@@ -174,14 +182,14 @@ class TrackedNumber {
   }
 
   int mod(int n) {
-    ArithmeticNumber number = savedRepresentations[n]
+    EuclideanDivision number = savedRepresentations[n]
     if (number == null) {
       throw new RuntimeException("Didn't save representation of $n")
     }
     return number.rest
   }
 
-  private static ArithmeticNumber computeRepresentation(Number n, Number divider) {
-    return new ArithmeticNumber(divider, quotient: n.longValue() / divider, rest: n.longValue() % divider)
+  private static EuclideanDivision computeRepresentation(Number n, Number divider) {
+    return new EuclideanDivision(divider, n.longValue() / divider, n.longValue() % divider)
   }
 }
