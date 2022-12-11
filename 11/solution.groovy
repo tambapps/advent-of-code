@@ -1,29 +1,49 @@
-// use long because in part 2, we have ridiculously enormous worry levels
+// use TrackedNumber because in part 2, we have ridiculously enormous worry levels
 List<Monkey> monkeys = []
 
 new File('input.txt').newReader().with {
   while (readLine() != null) {
     Monkey monkey = new Monkey()
-    monkey.initialItems = readLine().split(/:/)[1].split(/,/).collect { it.trim() }.collect { it.toLong() }
+    monkey.initialItems = readLine().split(/:/)[1].split(/,/).collect { it.trim() }.collect { it.toInteger() }
     monkey.operation = parseOperation(readLine().split(/=/)[1])
-    monkey.divisible = readLine().split(/\s+/).last().toLong()
-    monkey.trueMonkey = readLine().split(/\s+/).last().toLong()
-    monkey.falseMonkey = readLine().split(/\s+/).last().toLong()
+    monkey.divisible = readLine().split(/\s+/).last().toInteger()
+    monkey.trueMonkey = readLine().split(/\s+/).last().toInteger()
+    monkey.falseMonkey = readLine().split(/\s+/).last().toInteger()
     monkeys << monkey
     readLine() // empty line
   }
 }
 
+TrackedNumber.REPRESENTATIONS_TO_SAVE = monkeys*.divisible
+if (true) {
+  // TODO delete these tests
+  int n = 79 + 23
+  TrackedNumber number = new TrackedNumber(79) + new TrackedNumber(23)
+  number.savedRepresentations.each { Number d, ArithmeticNumber it ->
+    println("$n = ${it.d} * ${it.quotient} + ${it.rest}? " + (n == (it.d * it.quotient + it.rest)))
+  }
+
+  println()
+
+  n = 79 * 23
+  number = new TrackedNumber(79) * new TrackedNumber(23)
+  number.savedRepresentations.each { Number d, ArithmeticNumber it ->
+    println("$n = ${it.d} * ${it.quotient} + ${it.rest}? " + (n == (it.d * it.quotient + it.rest)))
+  }
+//  return
+}
+
+
 for (int part in [1, 2]) {
   monkeys*.reset()
   Map<Integer, Long> inspectionCountByMonkey = [:].withDefault { 0L }
-  int n = part == 1 ? 20 : 10_000
+  int n = part == 1 ? 20 : 10_000//10_000
   n.times { runRound(monkeys, part == 1, inspectionCountByMonkey) }
-  long monkeyBusiness = inspectionCountByMonkey.values()
+  Long monkeyBusiness = inspectionCountByMonkey.values()
       .sort { -it }[0..1]
       .inject {i1, i2 -> i1 * i2 }
 
-  inspectionCountByMonkey.each { int index, long inspectedItemCount ->
+  inspectionCountByMonkey.each { int index, Long inspectedItemCount ->
     println("Monkey $index inspected items $inspectedItemCount times.")
   }
   println("Part $part: the level of monkey business after $n rounds is $monkeyBusiness")
@@ -33,7 +53,7 @@ for (int part in [1, 2]) {
 static void runRound(List<Monkey> monkeys, boolean divideBy3, Map<Integer, Long> inspectionCountByMonkey) {
   monkeys.eachWithIndex { Monkey monkey, int i ->
     for (def item in monkey.items) {
-      long updatedItem = monkey.inspect(item, divideBy3)
+      TrackedNumber updatedItem = monkey.inspect(item, divideBy3)
       int targetMonkey = monkey.targetMonkey(updatedItem)
       monkeys[targetMonkey].items << updatedItem
       inspectionCountByMonkey[i]+= 1
@@ -43,46 +63,125 @@ static void runRound(List<Monkey> monkeys, boolean divideBy3, Map<Integer, Long>
   }
 }
 
-static Closure<Long> parseOperation(String operation) {
+static Closure<TrackedNumber> parseOperation(String operation) {
   Scanner scanner = new Scanner(operation)
-  Closure<Long> n1 = numberClosure(scanner.next())
-  Closure<Long> operator = switch (scanner.next()) {
-    case '*' -> { long i1, long i2 -> i1 * i2 }
-    default -> Long.&sum
+  Closure<TrackedNumber> n1 = numberClosure(scanner.next())
+  Closure<TrackedNumber> operator = switch (scanner.next()) {
+    case '*' -> { i1, i2 -> i1 * i2 }
+    default -> { i1, i2 -> i1 + i2 }
   }
-  Closure<Long> n2 = numberClosure(scanner.next())
-  return { long item ->
+  Closure<TrackedNumber> n2 = numberClosure(scanner.next())
+  return { item ->
     operator(n1(item), n2(item))
   }
 }
 
-static Closure<Long> numberClosure(String input) {
-  return input ==~ /\d+/ ? { input.toLong() } : { it }
+static Closure<TrackedNumber> numberClosure(String input) {
+  return input ==~ /\d+/ ? { new TrackedNumber(input.toInteger()) } : { it }
 }
 
 class Monkey {
-  List<Long> initialItems
-  List<Long> items
-  Closure<Long> operation // takes in parameter the item to throw
-  long divisible
-  long trueMonkey
-  long falseMonkey
+  List<Integer> initialItems
+  List<TrackedNumber> items
+  Closure<TrackedNumber> operation // takes in parameter the item to throw
+  Integer divisible
+  Integer trueMonkey
+  Integer falseMonkey
 
-  int targetMonkey(long item) {
-    if (item < 0) throw new RuntimeException("caca" + item)
+  int targetMonkey(TrackedNumber item) {
     return item % divisible == 0 ? trueMonkey : falseMonkey
   }
 
-  long inspect(long item, boolean divideBy3) {
-    long result = operation(item)
-    return divideBy3 ? result / 3 : simplify(result)
-  }
-
-  private long simplify(long item) {
-    item % divisible == 0 ? divisible : item
+  TrackedNumber inspect(TrackedNumber item, boolean divideBy3) {
+    TrackedNumber result = operation(item)
+    return divideBy3 ? result / 3 : result
   }
 
   void reset() {
-    items = initialItems.collect()
+    items = initialItems.collect {new TrackedNumber(it) }
+  }
+}
+
+class ArithmeticNumber {
+  final int d
+  ArithmeticNumber(Map otherProperties, Number d) {
+    this.d = d.intValue()
+    quotient = otherProperties.quotient as int
+    rest = otherProperties.rest as int
+  }
+  int quotient
+  int rest
+
+  ArithmeticNumber simplify() {
+    while (rest >= d) {
+      rest -= d
+      quotient++
+    }
+    return this
+  }
+
+  BigDecimal getValue() {
+    return (new BigDecimal(quotient) * new BigDecimal(d)) + new BigDecimal(rest)
+  }
+}
+class TrackedNumber {
+  static List<Integer> REPRESENTATIONS_TO_SAVE
+  Map<Number, ArithmeticNumber> savedRepresentations = [:]
+
+  private TrackedNumber() {}
+
+  TrackedNumber(Long n) {
+    REPRESENTATIONS_TO_SAVE.each { savedRepresentations[it] = computeRepresentation(n, it) }
+  }
+
+  BigDecimal getValue() {
+    return savedRepresentations.values().first().value
+  }
+  // n1 = d * q1 + r1
+  // n2 = d * q2 + r2
+
+  // (n1 + n2) = (q1 + q2) * d + (r1 + r2)
+  TrackedNumber plus(TrackedNumber other) {
+    Map<Number, ArithmeticNumber> savedRepresentations = [:]
+    REPRESENTATIONS_TO_SAVE.each { Number d ->
+      ArithmeticNumber a1 = this.savedRepresentations[d]
+      ArithmeticNumber a2 = other.savedRepresentations[d]
+      savedRepresentations[d] = new ArithmeticNumber(d, quotient: a1.quotient + a2.quotient, rest: a1.rest + a2.rest).simplify()
+    }
+    return new TrackedNumber(savedRepresentations: savedRepresentations)
+  }
+
+  // n1 = d * q1 + r1
+  // n2 = d * q2 + r2
+
+  // (n1 * n2) = (d * q1 + r1) * (d * q2 + r2)
+  //           = d * d  * q1 * q2 + d * q1 * r2 + r1 * d * q2 + r1 * r2
+  //           = d * ((d * q1 * q2) + (q1 * r2) + (r1 * q2)) + r1 * r2
+  TrackedNumber multiply(TrackedNumber other) {
+    Map<Number, ArithmeticNumber> savedRepresentations = [:]
+    REPRESENTATIONS_TO_SAVE.each { Number d ->
+      ArithmeticNumber a1 = this.savedRepresentations[d]
+      ArithmeticNumber a2 = other.savedRepresentations[d]
+      savedRepresentations[d] = new ArithmeticNumber(d,
+          quotient:(d * a1.quotient * a2.quotient) + (a1.quotient * a2.rest) + (a2.quotient * a1.rest),
+          rest: a1.rest * a2.rest).simplify()
+    }
+    return new TrackedNumber(savedRepresentations: savedRepresentations)
+  }
+
+  TrackedNumber div(Integer other) {
+    return new TrackedNumber((value / other).longValue())
+  }
+
+  int mod(int n) {
+    ArithmeticNumber number = savedRepresentations[n]
+    if (number == null) {
+      throw new RuntimeException("Didn't save representation of $n")
+    }
+    return number.rest
+  }
+
+  private static ArithmeticNumber computeRepresentation(Number n, Number divider) {
+    return new ArithmeticNumber(divider, quotient: n.longValue() / divider, rest: n.longValue() % divider)
   }
 }
