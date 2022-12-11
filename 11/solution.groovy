@@ -33,7 +33,7 @@ for (int part in [1, 2]) {
 static void runRound(List<Monkey> monkeys, boolean divideBy3, Map<Integer, Long> inspectionCountByMonkey) {
   monkeys.eachWithIndex { Monkey monkey, int i ->
     for (def item in monkey.items) {
-      long updatedItem = monkey.operation(item)
+      long updatedItem = monkey.simplify(monkey.operation(item))
       if (divideBy3) updatedItem /= 3L
       int targetMonkey = monkey.targetMonkey(updatedItem)
       monkeys[targetMonkey].items << updatedItem
@@ -70,7 +70,12 @@ class Monkey {
   long falseMonkey
 
   int targetMonkey(long item) {
+    if (item < 0) throw new RuntimeException("caca" + item)
     return item % divisible == 0 ? trueMonkey : falseMonkey
+  }
+
+  long simplify(long item) {
+    item % divisible == 0 ? divisible : item
   }
 
   void reset() {
