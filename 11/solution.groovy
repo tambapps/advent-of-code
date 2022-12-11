@@ -5,7 +5,7 @@ new File('input.txt').newReader().with {
     Monkey monkey = new Monkey()
     monkey.initialItems = readLine().split(/:/)[1].split(/,/).collect { it.trim() }.collect { it.toInteger() }
     monkey.operation = parseOperation(readLine().split(/=/)[1])
-    monkey.divisible = readLine().split(/\s+/).last().toInteger()
+    monkey.divider = readLine().split(/\s+/).last().toInteger()
     monkey.trueMonkey = readLine().split(/\s+/).last().toInteger()
     monkey.falseMonkey = readLine().split(/\s+/).last().toInteger()
     monkeys << monkey
@@ -13,7 +13,7 @@ new File('input.txt').newReader().with {
   }
 }
 
-RepresentedNumber.REPRESENTATIONS_TO_SAVE = monkeys*.divisible
+RepresentedNumber.DIVIDERS = monkeys*.divider
 
 for (int part in [1, 2]) {
   monkeys*.reset()
@@ -35,7 +35,7 @@ for (int part in [1, 2]) {
 static void runRound(List<Monkey> monkeys, boolean divideBy3, Map<Integer, Long> inspectionCountByMonkey) {
   monkeys.eachWithIndex { Monkey monkey, int i ->
     for (def item in monkey.items) {
-      RepresentedNumber updatedItem = monkey.inspect(item, divideBy3)
+      def updatedItem = monkey.inspect(item, divideBy3)
       int targetMonkey = monkey.targetMonkey(updatedItem)
       monkeys[targetMonkey].items << updatedItem
       inspectionCountByMonkey[i]++
@@ -66,12 +66,12 @@ class Monkey {
   List<Integer> initialItems // or rather the worried level of the item
   List<RepresentedNumber> items
   Closure<RepresentedNumber> operation // takes in parameter the item to throw to another monkey
-  Integer divisible
+  Integer divider
   Integer trueMonkey
   Integer falseMonkey
 
   int targetMonkey(RepresentedNumber item) {
-    return item % divisible == 0 ? trueMonkey : falseMonkey
+    return item % divider == 0 ? trueMonkey : falseMonkey
   }
 
   RepresentedNumber inspect(RepresentedNumber item, boolean divideBy3) {
@@ -118,14 +118,19 @@ class EuclideanDivision {
     return (new BigDecimal(quotient) * new BigDecimal(divider)) + new BigDecimal(rest)
   }
 }
+
+/**
+ * Class representing a number. It doesn't store the number's value but rather several representations of
+ * the number's euclidean division by several divider
+ */
 class RepresentedNumber {
-  static List<Integer> REPRESENTATIONS_TO_SAVE // we will save all Monkey Test: euclidean divisions
+  static List<Integer> DIVIDERS // we will save all Monkey Test: euclidean divisions
   private Map<Number, EuclideanDivision> euclideanDivisions = [:]
 
   private RepresentedNumber() {}
 
   RepresentedNumber(Number n) {
-    REPRESENTATIONS_TO_SAVE.each { euclideanDivisions[it] = EuclideanDivision.compute(n, it) }
+    DIVIDERS.each { euclideanDivisions[it] = EuclideanDivision.compute(n, it) }
   }
 
   BigDecimal getValue() {
@@ -138,7 +143,7 @@ class RepresentedNumber {
   // (n1 + n2) = (q1 + q2) * d + (r1 + r2)
   RepresentedNumber plus(RepresentedNumber other) {
     Map<Number, EuclideanDivision> euclideanDivisions = [:]
-    REPRESENTATIONS_TO_SAVE.each { Number d ->
+    DIVIDERS.each { Number d ->
       EuclideanDivision a1 = this.euclideanDivisions[d]
       EuclideanDivision a2 = other.euclideanDivisions[d]
       euclideanDivisions[d] = new EuclideanDivision(d, a1.quotient + a2.quotient, a1.rest + a2.rest).simplify()
@@ -153,7 +158,7 @@ class RepresentedNumber {
   //           = d * ((d * q1 * q2) + (q1 * r2) + (r1 * q2)) + r1 * r2
   RepresentedNumber multiply(RepresentedNumber other) {
     Map<Number, EuclideanDivision> euclideanDivisions = [:]
-    REPRESENTATIONS_TO_SAVE.each { Number d ->
+    DIVIDERS.each { Number d ->
       EuclideanDivision a1 = this.euclideanDivisions[d]
       EuclideanDivision a2 = other.euclideanDivisions[d]
       euclideanDivisions[d] = new EuclideanDivision(d,
@@ -174,5 +179,4 @@ class RepresentedNumber {
     }
     return number.rest
   }
-
 }
