@@ -1,4 +1,4 @@
-// use TrackedNumber because in part 2, we have ridiculously enormous worry levels
+// use RepresentedNumber because in part 2, we have ridiculously enormous worry levels
 List<Monkey> monkeys = []
 new File('input.txt').newReader().with {
   while (readLine() != null) {
@@ -38,7 +38,7 @@ static void runRound(List<Monkey> monkeys, boolean divideBy3, Map<Integer, Long>
       RepresentedNumber updatedItem = monkey.inspect(item, divideBy3)
       int targetMonkey = monkey.targetMonkey(updatedItem)
       monkeys[targetMonkey].items << updatedItem
-      inspectionCountByMonkey[i]+= 1
+      inspectionCountByMonkey[i]++
     }
     monkey.items.clear()
   }
@@ -49,7 +49,7 @@ static Closure<RepresentedNumber> parseOperation(String operation) {
   Closure<RepresentedNumber> n1 = numberClosure(scanner.next())
   Closure<RepresentedNumber> operator = switch (scanner.next()) {
     case '*' -> { i1, i2 -> i1 * i2 }
-    default -> { i1, i2 -> i1 + i2 }
+    case '+' -> { i1, i2 -> i1 + i2 }
   }
   Closure<RepresentedNumber> n2 = numberClosure(scanner.next())
   return { item ->
@@ -137,13 +137,13 @@ class RepresentedNumber {
   // n2 = d * q2 + r2
   // (n1 + n2) = (q1 + q2) * d + (r1 + r2)
   RepresentedNumber plus(RepresentedNumber other) {
-    Map<Number, EuclideanDivision> savedRepresentations = [:]
+    Map<Number, EuclideanDivision> euclideanDivisions = [:]
     REPRESENTATIONS_TO_SAVE.each { Number d ->
       EuclideanDivision a1 = this.euclideanDivisions[d]
       EuclideanDivision a2 = other.euclideanDivisions[d]
-      savedRepresentations[d] = new EuclideanDivision(d, a1.quotient + a2.quotient, a1.rest + a2.rest).simplify()
+      euclideanDivisions[d] = new EuclideanDivision(d, a1.quotient + a2.quotient, a1.rest + a2.rest).simplify()
     }
-    return new RepresentedNumber(euclideanDivisions: savedRepresentations)
+    return new RepresentedNumber(euclideanDivisions: euclideanDivisions)
   }
 
   // n1 = d * q1 + r1
@@ -152,22 +152,22 @@ class RepresentedNumber {
   //           = d * d  * q1 * q2 + d * q1 * r2 + r1 * d * q2 + r1 * r2
   //           = d * ((d * q1 * q2) + (q1 * r2) + (r1 * q2)) + r1 * r2
   RepresentedNumber multiply(RepresentedNumber other) {
-    Map<Number, EuclideanDivision> savedRepresentations = [:]
+    Map<Number, EuclideanDivision> euclideanDivisions = [:]
     REPRESENTATIONS_TO_SAVE.each { Number d ->
       EuclideanDivision a1 = this.euclideanDivisions[d]
       EuclideanDivision a2 = other.euclideanDivisions[d]
-      savedRepresentations[d] = new EuclideanDivision(d,
+      euclideanDivisions[d] = new EuclideanDivision(d,
           (d * a1.quotient * a2.quotient) + (a1.quotient * a2.rest) + (a2.quotient * a1.rest),
           a1.rest * a2.rest).simplify()
     }
-    return new RepresentedNumber(euclideanDivisions: savedRepresentations)
+    return new RepresentedNumber(euclideanDivisions: euclideanDivisions)
   }
 
-  RepresentedNumber div(Integer other) { // needed because we divide by 3 for part 1
+  RepresentedNumber div(Number other) { // needed because we divide by 3 for part 1
     return new RepresentedNumber((value / other).longValue())
   }
 
-  long mod(int n) {
+  long mod(Number n) {
     EuclideanDivision number = euclideanDivisions[n]
     if (number == null) {
       throw new RuntimeException("Didn't save representation of euclidean division by $n")
