@@ -2,29 +2,29 @@ import groovy.transform.EqualsAndHashCode
 import groovy.transform.Field
 import groovy.transform.Immutable
 
-@Field List2d list
+@Field List2d grid
 
 List<String> lines = new File('input.txt').readLines()
 def (int n, int m) = [lines[0].size(), lines.size()]
-list = new List2d(n: n, m: m)
-lines.join('').each { list.add(it as char) }
+grid = new List2d(n: n, m: m)
+lines.join('').each { grid.add(it as char) }
 
-Position start = list.positionsOf('S' as char).first()
-Position end = list.positionsOf('E' as char).first()
+Position start = grid.positionsOf('S' as char).first()
+Position end = grid.positionsOf('E' as char).first()
 println("Start: $start\nEnd: $end")
 
 int nbSteps = findPaths(start, end).size() - 1 // subtracting one because we included the start position in the path
 
-println("Part 1: $nbSteps are required to reach the destination from $start")
+println("Part 1: $nbSteps steps are required to reach the destination from $start")
 print("Part 2: ")
 
-List<Position> shortestPath = list.positionsOf('a' as char)
+List<Position> shortestPath = grid.positionsOf('a' as char)
     .findResults { // finding (non-null) results because some starts may not be able to reach the end
       findPaths(it, end)
     }
     .min {it.size() }
 if (shortestPath.size() - 1 < nbSteps) {
-  println("${shortestPath.size() - 1} are required to reach the destination from ${shortestPath.first()}")
+  println("${shortestPath.size() - 1} steps are required to reach the destination from ${shortestPath.first()}")
 } else {
   println("Same number of steps")
 }
@@ -70,11 +70,12 @@ Map<Position, Position> bfs(Position from, Position to) {
 
 List<Position> findReachableNeighbours(Position fromPosition) {
   List<Position> reachableNeighbours = []
-  Character from = list[fromPosition]
+  Character from = grid[fromPosition]
 
+  // go through left, top, right and bottom neighbours
   for (def offset in [[-1, 0], [0, 1], [1, 0], [0, -1]]) {
     Position neighbourPosition = fromPosition + offset
-    Character neighbour = list[neighbourPosition]
+    Character neighbour = grid[neighbourPosition]
     if (neighbour == null) continue
     if (height(from) >= height(neighbour) - 1) {
       reachableNeighbours << neighbourPosition
