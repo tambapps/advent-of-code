@@ -51,30 +51,19 @@ class Packet extends LinkedList implements Comparable<Packet> {
     while (i < l1.size() && i < l2.size()) {
       def item1 = l1[i]
       def item2 = l2[i]
-      if (item1 instanceof Integer && item2 instanceof Integer) {
-        int c = item1 <=> item2
-        if (c != 0) {
-          return c
-        }
-      }
 
-      if (item1 instanceof Integer && item2 instanceof Packet) {
-        int c = compare(new Packet([item1]), item2)
-        if (c != 0) {
-          return c
-        }
+      int c = 0
+      if (item1 instanceof Integer && item2 instanceof Integer) {
+        c = item1 <=> item2
+      } else if (item1 instanceof Integer && item2 instanceof Packet) {
+        c = compare(new Packet([item1]), item2)
+      } else if (item1 instanceof Packet && item2 instanceof Integer) {
+        c = compare(item1, new Packet([item2]))
+      } else if (item1 instanceof Packet && item2 instanceof Packet) {
+        c = compare(item1, item2)
       }
-      if (item1 instanceof Packet && item2 instanceof Integer) {
-        int c = compare(item1, new Packet([item2]))
-        if (c != 0) {
-          return c
-        }
-      }
-      if (item1 instanceof Packet && item2 instanceof Packet) {
-        int c = compare(item1, item2)
-        if (c != 0) {
-          return c
-        }
+      if (c != 0) {
+        return c
       }
       i++
     }
@@ -83,8 +72,9 @@ class Packet extends LinkedList implements Comparable<Packet> {
 }
 
 class PacketParser {
-  String line
-  int i = 0
+  final String line
+  private int i = 0
+
   PacketParser(String line) {
     this.line = line
   }
@@ -93,28 +83,28 @@ class PacketParser {
     Packet packet = new Packet()
     i++ // skipping [
     while (i < line.size()) {
-      if (current.isInteger()) {
+      if (currentToken.isInteger()) {
         packet << parseInteger()
-      } else if (current == '[') {
+      } else if (currentToken == '[') {
         packet << parse()
-      } else if (current == ']') {
+      } else if (currentToken == ']') {
         i++
         return packet
-      } else if (current == ',') {
+      } else if (currentToken == ',') {
         i++
       }
     }
-    i++
+    i++ // skipping ]
     return packet
   }
 
   Integer parseInteger() {
     int start = i
-    while (current.isInteger()) i++
+    while (currentToken.isInteger()) i++
     return line[start..<i].toInteger()
   }
 
-  String getCurrent() {
+  String getCurrentToken() {
     return line[i]
   }
 }
