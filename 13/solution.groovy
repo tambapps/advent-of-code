@@ -1,5 +1,3 @@
-
-
 List<Tuple2<List, List>> pairs = new File('input.txt').newReader().with { BufferedReader reader ->
   List<Tuple2<List, List>> pairs = []
   String line
@@ -16,30 +14,58 @@ int rightIndexSum = 0
 
 pairs.eachWithIndex { Tuple2<List, List> pair, int i ->
   int number = i + 1
-  if (isInRightOrder(pair.v1, pair.v2)) {
+  if (compare(pair.v1, pair.v2) <= 0) {
     rightIndexSum+= number
   }
 }
 
 println("Part 1: sum of indices of well ordered packet is $rightIndexSum")
 
-static boolean isInRightOrder(List l1, List l2) {
+// flattening packet pairs
+List<List> allPackets = pairs.collectMany { it }
+def divider1 = [[2]]
+def divider2 = [[6]]
+allPackets.addAll([divider1, divider2])
+
+allPackets.sort { l1, l2 -> compare(l1, l2) }
+int index1 = allPackets.indexOf(divider1) + 1
+int index2 = allPackets.indexOf(divider2) + 1
+
+println("Part 2: decoder key is " + (index1 * index2))
+
+static int compare(List l1, List l2) {
   int i = 0
   while (i < l1.size() && i < l2.size()) {
     def item1 = l1[i]
     def item2 = l2[i]
-    if (item1 instanceof Integer && item2 instanceof Integer && item1 > item2) {
-      return false
-    } else if (item1 instanceof Integer && item2 instanceof List) {
-      return isInRightOrder([item1], item2)
-    } else if (item1 instanceof List && item2 instanceof Integer) {
-      return isInRightOrder(item1, [item2])
-    } else if (item1 instanceof List && item2 instanceof List) { // both list
-      return isInRightOrder(item1, item2)
+    if (item1 instanceof Integer && item2 instanceof Integer) {
+      int c = item1 <=> item2
+      if (c != 0) {
+        return c
+      }
+    }
+
+    if (item1 instanceof Integer && item2 instanceof List) {
+      int c = compare([item1], item2)
+      if (c != 0) {
+        return c
+      }
+    }
+    if (item1 instanceof List && item2 instanceof Integer) {
+      int c = compare(item1, [item2])
+      if (c != 0) {
+        return c
+      }
+    }
+    if (item1 instanceof List && item2 instanceof List) {
+      int c = compare(item1, item2)
+      if (c != 0) {
+        return c
+      }
     }
     i++
   }
-  return i >= l1.size()
+  return l1.size() <=> l2.size()
 }
 
 class PacketParser {
