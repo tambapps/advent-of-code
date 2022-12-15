@@ -6,10 +6,8 @@ def sensorBeacons = new File('input.txt').readLines().collect { String line ->
   }
 }
 
-println(sensorBeacons)
-final long yInterest = 26
-final long xMin = sensorBeacons.collect() {it.xs - it.len2  }
-    .min()
+final long yInterest = 2000000
+final long xMin = sensorBeacons.collect() {it.xs - it.len2  }.min()
 final long xMax = sensorBeacons.collect() {it.xs + it.len2  }.max()
 println("min=$xMin, max=$xMax")
 long impossibleBeaconPositions = 0
@@ -20,9 +18,9 @@ for (def x in xMin..xMax) {
   }
 }
 
-println(impossibleBeaconPositions)
+println("Part 1: in the row where y=$yInterest, $impossibleBeaconPositions positions cannot contain a beacon")
 static long len2(long x1, long y1, long x2, long y2) {
   def r= Math.abs(x2 - x1) + Math.abs(y2 - y1)
-  if (r < 0) throw new RuntimeException("caca")
+  if (r < 0) throw new RuntimeException("use bigger number class")
   r
 }
