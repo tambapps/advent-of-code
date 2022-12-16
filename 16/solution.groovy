@@ -1,5 +1,6 @@
 import groovy.transform.Memoized
 import groovy.transform.ToString
+import groovyx.gpars.GParsPool
 
 @ToString(includePackage = false, includes = ['name', 'rate'], includeNames = true)
 class Node {
@@ -44,6 +45,7 @@ class Path {
       paths << new Path(
           openedValves: o,
           currentPosition: currentPosition,
+          // previousPosition not set in purpose
           score: score
       )
     }
@@ -69,6 +71,9 @@ List<Path> paths = [new Path(currentPosition: Node.NODES.find { it.name == 'AA' 
 
 30.times {
   println("$it ${paths.size()}")
+
+  int max = paths.collect { it.score }.max()
+  paths = paths.findAll { !(it.maximumGrowth && it.score < max) }
   paths = paths.collectMany { it.run() }
 }
 
