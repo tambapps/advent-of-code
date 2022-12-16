@@ -1,12 +1,15 @@
+import groovy.transform.Memoized
 import groovy.transform.ToString
 
 @ToString(includePackage = false, includes = ['name', 'rate'], includeNames = true)
 class Node {
   static Set<Node> NODES
+  static Set<Node> NODES_WITH_RATE
   String name
   int rate
   private List<String> _adj
 
+  @Memoized
   Set<Node> getAdj() {
     return Node.NODES.findAll { it.name in _adj }
   }
@@ -17,6 +20,7 @@ Node.NODES = new File('input.txt').readLines().collect { String line ->
   String node = nodeList.removeAt(0)
   new Node(name: node, rate: (line =~ /rate=(\d+)/)[0][1].toInteger(), _adj: nodeList)
 }.toSet()
+Node.NODES_WITH_RATE = Node.NODES.findAll { it.rate }
 
 class Path {
   Set<Node> openedValves = new HashSet<>()
@@ -24,9 +28,13 @@ class Path {
   Node previousPosition
   int score
 
+  boolean isMaximumGrowth() {
+    return openedValves.containsAll(Node.NODES_WITH_RATE)
+  }
+
   List<Path> run() {
     passMinute()
-    if (openedValves == Node.NODES) {
+    if (maximumGrowth) {
       return [this]
     }
     List<Path> paths = []
