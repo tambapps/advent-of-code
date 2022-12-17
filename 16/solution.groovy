@@ -65,7 +65,9 @@ class Path {
   }
 
   void passMinute() {
-    score+= openedValves.collect { it.rate }.sum() as Long ?: 0L
+    if (openedValves) {
+      score+= (long) openedValves.collect { it.rate }.sum()
+    }
   }
 }
 
