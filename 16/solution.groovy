@@ -1,4 +1,4 @@
-// --compile-static to improve performances
+// execute it with --compile-static for better performance
 // weirdly it gives the expectedAnswer minus 1 for the example input, but it worked fine for my input
 class Node {
   String name
