@@ -1,6 +1,6 @@
+// compile static to improve performances
 import groovy.transform.Memoized
 import groovy.transform.ToString
-import groovyx.gpars.GParsPool
 
 @ToString(includePackage = false, includes = ['name', 'rate'], includeNames = true)
 class Node {
@@ -19,7 +19,10 @@ class Node {
 Node.NODES = new File('input.txt').readLines().collect { String line ->
   List<String> nodeList = (line =~ /[A-Z]{2}/).findAll()
   String node = nodeList.removeAt(0)
-  new Node(name: node, rate: (line =~ /rate=(\d+)/)[0][1].toInteger(), _adj: nodeList)
+  new Node(name: node, rate: (line =~ /rate=(\d+)/).with {
+    it.find()
+    it.group(1).toLong()
+  }, _adj: nodeList)
 }.toSet()
 Node.NODES_WITH_RATE = Node.NODES.findAll { it.rate }
 
@@ -27,14 +30,13 @@ class Path {
   Set<Node> openedValves = new HashSet<>()
   Node currentPosition
   Node previousPosition
-  int score
+  long score
 
   boolean isMaximumGrowth() {
     return openedValves.containsAll(Node.NODES_WITH_RATE)
   }
 
   List<Path> run() {
-    passMinute()
     if (maximumGrowth) {
       return [this]
     }
@@ -63,7 +65,7 @@ class Path {
   }
 
   void passMinute() {
-    score+= openedValves.collect { it.rate }.sum() ?: 0
+    score+= openedValves.collect { it.rate }.sum() as Long ?: 0L
   }
 }
 
@@ -72,10 +74,13 @@ List<Path> paths = [new Path(currentPosition: Node.NODES.find { it.name == 'AA' 
 30.times {
   println("$it ${paths.size()}")
 
-  int max = paths.collect { it.score }.max()
-  paths = paths.findAll { !(it.maximumGrowth && it.score < max) }
-  paths = paths.collectMany { it.run() }
+  long maxScore = 0
+  paths.each {
+    it.passMinute()
+    maxScore = Math.max(maxScore, it.score)
+  }
+  paths = paths.findAll { !it.maximumGrowth || it.score >= maxScore }.collectMany { it.run() }
 }
 
 println(paths.size())
-println(paths.collect { it.score}.max())
+println(paths.collect { it.score }.max())
