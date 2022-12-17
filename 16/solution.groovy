@@ -1,4 +1,5 @@
 // compile static to improve performances
+// weirdly it didn't work for the example input, but it worked for my real input.
 import groovy.transform.Memoized
 import groovy.transform.ToString
 
@@ -43,15 +44,16 @@ class Path {
           // previousPosition not set in purpose
           score: score
       )
-    }
-    for (def node in currentPosition.adj) {
-      if (node == previousPosition) continue
-      paths << new Path(
-          openedValves: new HashSet<Node>(openedValves),
-          currentPosition: node,
-          previousPosition: currentPosition,
-          score: score
-      )
+    } else {
+      for (def node in currentPosition.adj) {
+        if (node == previousPosition) continue
+        paths << new Path(
+            openedValves: new HashSet<Node>(openedValves),
+            currentPosition: node,
+            previousPosition: currentPosition,
+            score: score
+        )
+      }
     }
 
     return paths
