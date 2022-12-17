@@ -1,7 +1,8 @@
-def sensorBeacons = new File('input.txt').readLines().collect { String line ->
-  def (_, xs, ys, xb, yb) = (line =~ /Sensor at x=(-?\d+), y=(-?\d+): closest beacon is at x=(-?\d+), y=(-?\d+)/)[0]
-  [xs: xs, ys: ys, xb: xb, yb: yb].tap {
-    replaceAll { key, value -> value.toLong() }
+// execute it with --compile-static for better performance
+class SensorBeacon { long xs; long ys; long xb; long yb; long len2 }
+List<SensorBeacon> sensorBeacons = new File('input.txt').readLines().collect { String line ->
+  List<Long> coordinates = (line =~ /-?\d+/).findAll().collect { it.toString().toLong() }
+  new SensorBeacon(xs: coordinates[0], ys: coordinates[1], xb: coordinates[2], yb: coordinates[3]).tap {
     len2 = len2(it.xs, it.ys, it.xb, it.yb)
   }
 }
