@@ -98,11 +98,14 @@ for (long howMuch in [2022L, 1000000000000L]) {
   long lowestYInMemory = 0
   highestRockYs = [0L] * WIDTH
   for (long i = 0; i < howMuch; i++) { // n.times {} doesn't seem to work for large numbers
-    print("\rRun $i of $howMuch")
+    String percentage = "%.1f%%".formatted(i.toFloat() * 100 / howMuch.toFloat())
+    print("\rRun $i of $howMuch ($percentage)")
     fall()
-    // this part is to clean some memory TODO
-
-
+    // this part is to clean some memory
+    for (long y = lowestYInMemory; y < highestRockYs.min() - 4; y++) {
+      tetris.remove(y)
+    }
+    lowestYInMemory = highestRockYs.min() - 2
   }
   println("\nThe tower of rocks is ${highestRockYs.max()} tall after $howMuch runs")
 }
