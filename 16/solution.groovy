@@ -32,14 +32,7 @@ class Path {
   Node previousPosition
   long score
 
-  boolean isMaximumGrowth() {
-    return openedValves.containsAll(Node.NODES_WITH_RATE)
-  }
-
   List<Path> run() {
-    if (maximumGrowth) {
-      return [this]
-    }
     List<Path> paths = []
     if (!(currentPosition in openedValves) && currentPosition.rate) {
       def o = new HashSet<Node>(openedValves)
@@ -75,13 +68,8 @@ List<Path> paths = [new Path(currentPosition: Node.NODES.find { it.name == 'AA' 
 
 30.times {
   println("$it ${paths.size()}")
-
-  long maxScore = 0
-  paths.each {
-    it.passMinute()
-    maxScore = Math.max(maxScore, it.score)
-  }
-  paths = paths.findAll { !it.maximumGrowth || it.score >= maxScore }.collectMany { it.run() }
+  paths.each {it.passMinute() }
+  paths = paths.collectMany { it.run() }
 }
 
 println(paths.size())
