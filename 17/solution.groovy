@@ -1,7 +1,5 @@
 // execute it with --compile-static for better performance
 // weirdly it gives the expectedAnswer minus 1 for the example input, but it worked fine for my input
-
-
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.Field
 import groovy.transform.Immutable
@@ -12,24 +10,27 @@ import java.lang.Long as MyNumber
 @Field final String ROCK = '#'
 @Field final String LEFT = '<'
 @Field final String RIGHT = '>'
+@Field final int WIDTH = 7
 
 @EqualsAndHashCode
 @Immutable
-class Position { MyNumber x; MyNumber y }
-
+class Position {
+  MyNumber x
+  MyNumber y
+}
 // for this problem, we'll consider y=0 as the bottom, and positive values to be upper
 @Field Map<MyNumber, Map<MyNumber, String>> tetris = [:].withDefault { def oY ->
   MyNumber y = (MyNumber) oY
   [:].withDefault { def oX ->
     MyNumber x = (MyNumber) oX
-    y < 0 || x < 0 || x >= 7 ? '|' : EMPTY
+    y < 0 || x < 0 || x >= WIDTH ? '|' : EMPTY
   }
 }
 List<String> gasDirections = new File('input.txt').text.collect {it.toString() }
 
-MyNumber rockI = 0
-MyNumber gasI = 0
-MyNumber highestRockY = 0
+MyNumber rockI
+MyNumber gasI
+List<MyNumber> highestRockYs
 final int startX = 2
 
 void move(List<Position> rp, int offsetX, int offsetY) {
@@ -49,7 +50,7 @@ def printTetris = { List<Position> positionList = [] -> // for debug
 }
 
 def fall = {
-  MyNumber startY = highestRockY + 3
+  MyNumber startY = highestRockYs.max() + 3
   List<Position> rockPositions = switch (rockI++ % 5) {
     case 0 -> (0..<4).collect { new Position(x: it, y: 0) } // horizontal line
     case 1 -> [new Position(x: 1, y: 2),
@@ -84,18 +85,24 @@ def fall = {
     t[p.y][p.x] = ROCK
   }
   //printTetris(rockPositions)
-  highestRockY = Math.max(highestRockY, rockPositions.collect { it.y + 1}.max())
+  for (int x in 0..<WIDTH) {
+    highestRockYs[x] = Math.max(rockPositions.findAll { it.x.intValue() == x }
+        .collect { it.y + 1}.max() ?: 0L, highestRockYs[x])
+  }
 }
+
 for (long howMuch in [2022L, 1000000000000L]) {
   rockI = 0
   gasI = 0
-  highestRockY = 0
+
+  long lowestYInMemory = 0
+  highestRockYs = [0L] * WIDTH
   for (long i = 0; i < howMuch; i++) { // n.times {} doesn't seem to work for large numbers
     print("\rRun $i of $howMuch")
     fall()
+    // this part is to clean some memory TODO
+
+
   }
-  println("Part 1: The tower of rocks is $highestRockY tall after $howMuch runs")
+  println("\nThe tower of rocks is ${highestRockYs.max()} tall after $howMuch runs")
 }
-
-
-
