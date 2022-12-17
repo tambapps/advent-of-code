@@ -1,53 +1,47 @@
 // compile static to improve performances
 // weirdly it didn't work for the example input, but it worked for my real input.
-import groovy.transform.Memoized
-import groovy.transform.ToString
 
-@ToString(includePackage = false, includes = ['name', 'rate'], includeNames = true)
 class Node {
-  static Set<Node> NODES
-  static Set<Node> NODES_WITH_RATE
   String name
   int rate
-  private List<String> _adj
-
-  @Memoized
-  Set<Node> getAdj() {
-    return Node.NODES.findAll { it.name in _adj }
-  }
+  List<Node> adj
 }
 
-Node.NODES = new File('input.txt').readLines().collect { String line ->
+Map<Node, List<String>> adjMap = new File('input.txt').readLines().collectEntries { String line ->
   List<String> nodeList = (line =~ /[A-Z]{2}/).findAll()
   String node = nodeList.removeAt(0)
-  new Node(name: node, rate: (line =~ /rate=(\d+)/).with {
+  [(new Node(name: node, rate: (line =~ /rate=(\d+)/).with {
     it.find()
     it.group(1).toLong()
-  }, _adj: nodeList)
-}.toSet()
-Node.NODES_WITH_RATE = Node.NODES.findAll { it.rate }
+  })): nodeList]
+}
+final Map<String, Node> nodes = adjMap.keySet().collectEntries { [(it.name): it] }
+adjMap.each { node, adjNames ->
+  node.adj = adjNames.collect { String nodeName -> nodes[nodeName] }
+}
 
-class Path {
+class ValveApproach {
   Set<Node> openedValves = new HashSet<>()
   Node currentPosition
   Node previousPosition
   long score
 
-  List<Path> run() {
-    List<Path> paths = []
+  List<ValveApproach> next() {
+    List<ValveApproach> paths = []
     if (!(currentPosition in openedValves) && currentPosition.rate) {
+      // taking this minute to open the valve
       def o = new HashSet<Node>(openedValves)
       o << currentPosition
-      paths << new Path(
+      paths << new ValveApproach(
           openedValves: o,
           currentPosition: currentPosition,
-          // previousPosition not set in purpose
+          // previousPosition not set on purpose
           score: score
       )
     } else {
       for (def node in currentPosition.adj) {
         if (node == previousPosition) continue
-        paths << new Path(
+        paths << new ValveApproach(
             openedValves: new HashSet<Node>(openedValves),
             currentPosition: node,
             previousPosition: currentPosition,
@@ -55,7 +49,6 @@ class Path {
         )
       }
     }
-
     return paths
   }
 
@@ -66,13 +59,10 @@ class Path {
   }
 }
 
-List<Path> paths = [new Path(currentPosition: Node.NODES.find { it.name == 'AA' })]
-
+List<ValveApproach> approaches = [new ValveApproach(currentPosition: nodes['AA'])]
 30.times {
-  println("$it ${paths.size()}")
-  paths.each {it.passMinute() }
-  paths = paths.collectMany { it.run() }
+  approaches.each {it.passMinute() }
+  approaches = approaches.collectMany { it.next() }
 }
 
-println(paths.size())
-println(paths.collect { it.score }.max())
+println("The most pressure we can release is " + approaches.collect { it.score }.max())
