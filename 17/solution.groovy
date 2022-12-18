@@ -1,5 +1,5 @@
 // execute it with --compile-static for better performance
-// weirdly it gives the expectedAnswer minus 1 for the example input, but it worked fine for my input
+// unfortunately part 2 doesn't work. It can't find cycle on example input and can find one on mine but doesn't give right answer
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.Field
 import groovy.transform.Immutable
@@ -52,7 +52,7 @@ def reset = { ->
 }
 
 def printTetris = { List<Position> positionList = [], long startY = 0 -> // for debug
-  for (long y in (startY + 2694 + 4)..startY) {
+  for (long y in (startY + 8)..startY) {
     for (long x in 0..7) {
       print(new Position(x: x, y: y) in positionList ? ROCK : tetris[y][x])
     }
@@ -130,6 +130,7 @@ long n = 1000000000000L
 long i = 0
 long cycleStartY = 0
 long cycleStartI = 0
+long cycleEndY = 0
 List<Long> cycleConfiguration = [rockI, gasI]
 Cycle cycle
 while (i < n && cycle == null) {
@@ -137,8 +138,9 @@ while (i < n && cycle == null) {
   if (highestRockYs.collect().unique().size() == 1) { // means this is a ground
     def newCycleConf = [rockI, gasI]
     if (cycleConfiguration == newCycleConf) {
-      cycle = new Cycle(startY: cycleStartY, endY: highestRockYs.first() - 1, nbSteps: i - cycleStartI - 1)
+      cycle = new Cycle(startY: cycleStartY, endY: cycleEndY, nbSteps: i - cycleStartI)
       println("Cycle found: $cycle")
+      i++
       break
     }
     cycleStartI = i
@@ -146,6 +148,7 @@ while (i < n && cycle == null) {
     cycleConfiguration = newCycleConf
   }
   i++
+  cycleEndY = highestRockYs.max()
 }
 //printTetris([], cycleStartY - 2)
 println("Repeating cycles")
@@ -154,12 +157,14 @@ while (i + cycle.nbSteps < n) {
   i += cycle.nbSteps
   offset += cycle.height
 }
-
+printTetris([], highestRockYs.min() - 2)
 long lastCycleHighestY = highestRockYs.max()
+println("Remaining ${n - i} steps")
 while (i < n) {
   fall()
   i++
 }
 offset += highestRockYs.max() - lastCycleHighestY
-long highestRockY = cycle.startY + offset
+long highestRockY = cycle.endY + offset
 println("Part 2: $highestRockY")
+println(1561739130391 - highestRockY)
