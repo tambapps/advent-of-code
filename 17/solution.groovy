@@ -3,6 +3,7 @@
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.Field
 import groovy.transform.Immutable
+import groovy.transform.ToString
 
 import java.lang.Long as MyNumber
 
@@ -44,14 +45,26 @@ boolean canMove(List<Position> rp, int offsetX, int offsetY) {
   return rockPositions.every { Position p -> tetris[p.y][p.x] == EMPTY }
 }
 
-def printTetris = { List<Position> positionList = [] -> // for debug
-  for (def y in 21..0) { for (def x in 0..7) {print(new Position(x: x, y: y) in positionList ? ROCK : tetris[y][x])} ; println() }
+def reset = { ->
+  rockI = 0
+  gasI = 0
+  highestRockYs = [0L] * WIDTH
+}
+
+def printTetris = { List<Position> positionList = [], long startY = 0 -> // for debug
+  for (long y in (startY + 2694 + 4)..startY) {
+    for (long x in 0..7) {
+      print(new Position(x: x, y: y) in positionList ? ROCK : tetris[y][x])
+    }
+    println()
+  }
   println("\n")
 }
 
 def fall = {
   MyNumber startY = highestRockYs.max() + 3
-  List<Position> rockPositions = switch (rockI++ % 5) {
+
+  List<Position> rockPositions = switch (rockI) {
     case 0 -> (0..<4).collect { new Position(x: it, y: 0) } // horizontal line
     case 1 -> [new Position(x: 1, y: 2),
         new Position(x: 0, y: 1), new Position(x: 1, y: 1), new Position(x: 2, y: 1),
@@ -62,14 +75,16 @@ def fall = {
     case 4 -> [new Position(x: 0, y: 0), new Position(x: 1, y: 0), new Position(x: 0, y: 1), new Position(x: 1, y: 1)] // square
     default -> throw new RuntimeException("WTF")
   }
+  rockI = (rockI + 1) % 5
   rockPositions = rockPositions.collect { new Position(x: startX + it.x, y: startY + it.y) }
 
   while (true) {
-    int offsetX = switch (gasDirections[gasI++ % gasDirections.size()]) {
+    int offsetX = switch (gasDirections[gasI]) {
       case LEFT -> -1
       case RIGHT -> 1
       default -> throw new RuntimeException("WTF")
     }
+    gasI = (gasI + 1) % gasDirections.size()
     if (canMove(rockPositions, offsetX, 0)) {
       move(rockPositions, offsetX, 0)
     }
@@ -91,21 +106,60 @@ def fall = {
   }
 }
 
-for (long howMuch in [2022L, 1000000000000L]) {
-  rockI = 0
-  gasI = 0
-
-  long lowestYInMemory = 0
-  highestRockYs = [0L] * WIDTH
-  for (long i = 0; i < howMuch; i++) { // n.times {} doesn't seem to work for large numbers
-    String percentage = "%.1f%%".formatted(i.toFloat() * 100 / howMuch.toFloat())
-    print("\rRun $i of $howMuch ($percentage)")
-    fall()
-    // this part is to clean some memory
-    for (long y = lowestYInMemory; y < highestRockYs.min() - 4; y++) {
-      tetris.remove(y)
-    }
-    lowestYInMemory = highestRockYs.min() - 2
-  }
-  println("\nThe tower of rocks is ${highestRockYs.max()} tall after $howMuch runs")
+reset()
+2022.times {
+  print("\rRun $it out of 2022")
+  fall()
 }
+println("\rPart 1: the tower of rocks is ${highestRockYs.max()} units tall after 2022 runs")
+
+// part 2: need first to search for a cycle
+println("Part 2\nLooking for a cycle")
+@ToString(includeNames = true)
+class Cycle {
+  long startY
+  long endY // inclusive
+  long nbSteps
+
+  long getHeight() {
+    return endY - startY
+  }
+}
+reset()
+long n = 1000000000000L
+long i = 0
+long cycleStartY = 0
+long cycleStartI = 0
+List<Long> cycleConfiguration = [rockI, gasI]
+Cycle cycle
+while (i < n && cycle == null) {
+  fall()
+  if (highestRockYs.collect().unique().size() == 1) { // means this is a ground
+    def newCycleConf = [rockI, gasI]
+    if (cycleConfiguration == newCycleConf) {
+      cycle = new Cycle(startY: cycleStartY, endY: highestRockYs.first() - 1, nbSteps: i - cycleStartI - 1)
+      println("Cycle found: $cycle")
+      break
+    }
+    cycleStartI = i
+    cycleStartY = highestRockYs.first()
+    cycleConfiguration = newCycleConf
+  }
+  i++
+}
+//printTetris([], cycleStartY - 2)
+println("Repeating cycles")
+long offset = 0
+while (i + cycle.nbSteps < n) {
+  i += cycle.nbSteps
+  offset += cycle.height
+}
+
+long lastCycleHighestY = highestRockYs.max()
+while (i < n) {
+  fall()
+  i++
+}
+offset += highestRockYs.max() - lastCycleHighestY
+long highestRockY = cycle.startY + offset
+println("Part 2: $highestRockY")
