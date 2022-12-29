@@ -12,3 +12,22 @@ groovy --compile-static solution.groovy
 ```
 
 `--compile-static` must be **before** the `solution.groovy`, or else it will be treated as an argument for the script
+
+## Progress
+
+
+| Day | Part 1 | Part 2 |
+|-----|--------|--------|
+| 1   | [x]    | [x]    |
+| 2   | 301    | 283    |
+| 3   | 301    | 283    |
+| 4   | 301    | 283    |
+| 5   | 301    | 283    |
+| 6   | 301    | 283    |
+| 7   | 301    | 283    |
+| 8   | 301    | 283    |
+| 9   | 301    | 283    |
+| 8   | 301    | 283    |
+| 8   | 301    | 283    |
+| 8   | 301    | 283    |
+| 8   | 301    | 283    |
