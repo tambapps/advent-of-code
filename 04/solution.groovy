@@ -11,5 +11,5 @@ for (String line in f.readLines()) {
   if (!range1.intersect(range2).isEmpty()) part2Count++
 }
 
-println("Part 1: $part1Count assignements have one range that fully contains the other")
-println("Part 2: $part2Count assignements have one range that overlaps the other")
+println("Part 1: $part1Count assignments have one range that fully contains the other")
+println("Part 2: $part2Count assignments have one range that overlaps the other")
