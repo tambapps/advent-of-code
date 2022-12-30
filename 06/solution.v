@@ -2,11 +2,11 @@ import os { read_file }
 
 fn main() {
   text := read_file('input.txt')!
-  println('Part 1: marker is at position ' + search_packet(text, 4).str())
-  println('Part 2: marker is at position ' + search_packet(text, 14).str())
+  println('Part 1: marker is at position ' + search_marker_position(text, 4).str())
+  println('Part 2: marker is at position ' + search_marker_position(text, 14).str())
 }
 
-fn search_packet(text string, window_size int) int {
+fn search_marker_position(text string, window_size int) int {
   for i := window_size; i < text.len; i++ {
     chunk := text[(i-window_size)..(i)]
     if are_all_unique(chunk) {
