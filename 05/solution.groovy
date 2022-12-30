@@ -1,7 +1,5 @@
 File f = new File('input.txt')
 
-def (int part1Count, int part2Count) = [0, 0]
-
 def (List<String> reversedStacksInput, List<String> moves) = f.newReader().with { reader ->
   String line;
   List<String> stacksInput = []
