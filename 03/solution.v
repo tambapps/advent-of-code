@@ -5,12 +5,13 @@ fn main() {
   mut part2_score := 0
   mut compartment_group := []string{}
   for line in read_lines('input.txt')! {
-  rucksack_size := line.len / 2
-  sack1 := line[0..rucksack_size]
-  sack2 := line[rucksack_size..line.len]
+    rucksack_size := line.len / 2
+    sack1 := line[0..rucksack_size]
+    sack2 := line[rucksack_size..line.len]
     common_item := sack1[sack1.index_any(sack2)].ascii_str()
     part1_score+= priority(common_item)
 
+    // part 2
     compartment_group << line
     if compartment_group.len == 3 {
       for c in compartment_group[0].runes().map(it.str()) {
