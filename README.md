@@ -28,7 +28,7 @@ v run solution.v
 | Day | Part 1<br/>Groovy   | Part 2<br/>Groovy  | Part 1<br/>V       | Part 2<br/>V       |
 |-----|---------------------|--------------------|--------------------|--------------------|
 | 1   | :white_check_mark:	 | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| 2   | :white_check_mark:  | :white_check_mark: | :x:                | :x:                |
+| 2   | :white_check_mark:  | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | 3   | :white_check_mark:  | :white_check_mark: | :x:                | :x:                |
 | 4   | :white_check_mark:  | :white_check_mark: | :x:                | :x:                |
 | 5   | :white_check_mark:  | :white_check_mark: | :x:                | :x:                |
