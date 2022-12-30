@@ -1,8 +1,7 @@
 import os { read_lines }
 
 fn main() {
-  // unfortunately there is no way to read file line per line in V
-  lines := read_lines('input.txt')!
+  lines := read_lines('input.txt')! // unfortunately there is no way (yet?) to read file line per line in V
   mut i := 0
   nb_stacks := (lines[0].len + 1) / 4
   mut stacks_1 := [][]string{len: nb_stacks, init: []string{len: 0}}
@@ -32,19 +31,11 @@ fn main() {
       stacks_1[to] << stacks_1[from].pop()
       part2_move.prepend(stacks_2[from].pop())
     }
-
     for m in part2_move {
       stacks_2[to] << m
     }
   }
 
-
   println('Part 1: The top crates are ${stacks_1.map(it.last()).join('')}')
   println('Part 2: The top crates are ${stacks_2.map(it.last()).join('')}')
-}
-
-fn to_range(bounds []int) []int {
-  start := bounds.first()
-  end := bounds.last()
-  return []int{len: end - start + 1, init: start + it}
 }
