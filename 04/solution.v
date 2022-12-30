@@ -7,10 +7,10 @@ fn main() {
   for line in read_lines('input.txt')! {
     ranges := line.split(',').map(to_range(it.split('-').map(it.int())))
 
-    if ranges.first().all(ranges.last().contains(it)) || ranges.last().all(ranges.first().contains(it)) {
+    if ranges.first().all(it in ranges.last()) || ranges.last().all(it in ranges.first()) {
       part1_count++
     }
-    if ranges.first().any(ranges.last().contains(it)) || ranges.last().any(ranges.first().contains(it)) {
+    if ranges.first().any(it in ranges.last()) || ranges.last().any(it in ranges.first()) {
       part2_count++
     }
   }
