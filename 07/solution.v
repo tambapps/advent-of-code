@@ -9,24 +9,12 @@ mut:
   children []&Directory = []&Directory{}
 }
 
-fn (d Directory) parent() &Directory {
-  return d.parent[0]
+fn (self Directory) has_parent() bool {
+  return self.parent.len > 0
 }
 
-fn (self Directory) total_size() int {
-  mut total := self.size
-  mut dirs := []&Directory{}
-  dirs << self.children
-  for dirs.len > 0 {
-    mut next_children := []&Directory{}
-    for dir in dirs {
-      total += dir.size
-      next_children << dir.children
-    }
-    dirs.clear()
-    dirs << next_children
-  }
-  return total
+fn (d Directory) parent() &Directory {
+  return d.parent[0]
 }
 
 fn main() {
@@ -56,13 +44,18 @@ fn main() {
         current_dir.children << dir
       } else {
         current_dir.size+= fields[0].int()
+        mut d := current_dir
+        for d.has_parent() {
+          d = d.parent()
+          d.size += fields[0].int()
+        }
       }
     }
   }
-  part1_sum := sum(all_directories.map(it.total_size()).filter(it <= 100000)) or { panic("How could this happen") }
+  part1_sum := sum(all_directories.map(it.size).filter(it <= 100000)) or { panic("How could this happen") }
   println('Part 1: the sum of the total size of all directories with a size of at most 100000 is $part1_sum')
-  available_space := 70000000 - root.total_size()
+  available_space := 70000000 - root.size
   space_needed := 30000000 - available_space
-  part2_size := min(all_directories.map(it.total_size()).filter(it >= space_needed)) or { panic("How could this happen") }
+  part2_size := min(all_directories.map(it.size).filter(it >= space_needed)) or { panic("How could this happen") }
   println('Part 2: the size of the directory to delete is $part2_size')
 }
