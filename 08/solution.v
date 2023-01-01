@@ -27,43 +27,42 @@ fn main() {
 }
 
 fn compute_viewing(grid []rune, x int, y int, n int, m int) ViewResult {
-    value := grid[index(x, y, n)]
-    max := if n > m { n } else { m }
-    mut from_left := true
-    mut from_top := true
-    mut from_right := true
-    mut from_bottom := true
-    mut left_distance := 0
-    mut top_distance := 0
-    mut right_distance := 0
-    mut bottom_distance := 0
-    // TODO bug in scenic distance
-    for i := 1; i < max; i++ {
-        // left
-        if x - i >= 0 && grid[index(x - i, y, n)] >= value {
-            from_left = false
-            left_distance = i
-        }
-        // top
-        if y - i >= 0 && grid[index(x, y - i, n)] >= value {
-            from_top = false
-            top_distance = i
-        }
-        // right
-        if x + i < n && grid[index(x + i, y, n)] >= value {
-            from_right = false
-            right_distance = i
-        }
-        // bottom
-        if y + i < m && grid[index(x, y + i, n)] >= value {
-            from_bottom = false
-            bottom_distance = i
-        }
+  value := grid[index(x, y, n)]
+  max := if n > m { n } else { m }
+  mut from_left := true
+  mut from_top := true
+  mut from_right := true
+  mut from_bottom := true
+  mut left_distance := 0
+  mut top_distance := 0
+  mut right_distance := 0
+  mut bottom_distance := 0
+  for i := 1; i < max; i++ {
+    // left
+    if x - i >= 0 {
+      if from_left { left_distance++ }
+      if grid[index(x - i, y, n)] >= value { from_left = false }
     }
-    return ViewResult {
-      visible: from_left || from_top || from_right || from_bottom
-      scenic_score: left_distance * top_distance * right_distance * bottom_distance
+    // top
+    if y - i >= 0 {
+      if from_top { top_distance++ }
+      if grid[index(x, y - i, n)] >= value { from_top = false }
     }
+    // right
+    if x + i < n {
+      if from_right { right_distance++ }
+      if grid[index(x + i, y, n)] >= value { from_right = false }
+    }
+    // bottom
+    if y + i < m {
+      if from_bottom { bottom_distance++ }
+      if grid[index(x, y + i, n)] >= value { from_bottom = false }
+    }
+  }
+  return ViewResult {
+    visible: from_left || from_top || from_right || from_bottom
+    scenic_score: left_distance * top_distance * right_distance * bottom_distance
+  }
 }
 
 fn index(x int, y int, n int) int {
