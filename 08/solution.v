@@ -1,10 +1,9 @@
 import os { read_lines }
+import arrays { reduce, max }
 
-enum Direction as u8 {
-  left
-  top
-  right
-  bottom
+struct ViewResult {
+  visible bool
+  scenic_score int
 }
 
 fn main() {
@@ -13,42 +12,58 @@ fn main() {
   m := lines.len
   grid := []rune{len: n * m, cap: n * m, init: rune(lines[it / m][it % n])}
   mut candidates := 0
-  for j := 0; j <m; j++ {
-    for i := 0; i < n; i++ {
-      if is_visible(grid, i, j, n, m) {
+  mut max_scenic_score := 0
+  for y := 0; y <m; y++ {
+    for x := 0; x < n; x++ {
+      result := compute_viewing(grid, x, y, n, m)
+      if result.visible {
         candidates++
       }
+      max_scenic_score = max([result.scenic_score, max_scenic_score])!
     }
   }
   println('Part 1: There are $candidates candidates')
+  println('Part 2: The max scenic score is $max_scenic_score')
 }
 
-fn is_visible(grid []rune, x int, y int, n int, m int) bool {
+fn compute_viewing(grid []rune, x int, y int, n int, m int) ViewResult {
     value := grid[index(x, y, n)]
     max := if n > m { n } else { m }
     mut from_left := true
     mut from_top := true
     mut from_right := true
     mut from_bottom := true
+    mut left_distance := 0
+    mut top_distance := 0
+    mut right_distance := 0
+    mut bottom_distance := 0
+    // TODO bug in scenic distance
     for i := 1; i < max; i++ {
         // left
         if x - i >= 0 && grid[index(x - i, y, n)] >= value {
             from_left = false
+            left_distance = i
         }
         // top
         if y - i >= 0 && grid[index(x, y - i, n)] >= value {
             from_top = false
+            top_distance = i
         }
         // right
         if x + i < n && grid[index(x + i, y, n)] >= value {
             from_right = false
+            right_distance = i
         }
         // bottom
         if y + i < m && grid[index(x, y + i, n)] >= value {
             from_bottom = false
+            bottom_distance = i
         }
     }
-    return from_left || from_top || from_right || from_bottom
+    return ViewResult {
+      visible: from_left || from_top || from_right || from_bottom
+      scenic_score: left_distance * top_distance * right_distance * bottom_distance
+    }
 }
 
 fn index(x int, y int, n int) int {
