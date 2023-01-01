@@ -22,36 +22,34 @@ mut:
   false_monkey int
 }
 
-// TODO part 2 gives wrong result
 fn main() {
   mut monkeys := parse_monkeys()
+  // useful for part 2
+  modulo := reduce(monkeys.values().map(it.divider), fn (t1 u64, t2 u64) u64 { return t1 * t2 })!
   for part in [1, 2] {
      mut inspection_count_by_monkey := map[int]u64{}
      // resetting monkeys
-     for mut m in monkeys.values() {
-      m.items.clear()
-      m.items << m.initial_items
-     }
+     for mut m in monkeys.values() { m.items = m.initial_items.clone() }
      n := if part == 1 { 20 } else { 10_000 }
      println('Part $part')
      for c := 0; c < n; c++ {
-       run_round(mut monkeys, part == 1, mut inspection_count_by_monkey)
+       run_round(mut monkeys, part == 1, mut inspection_count_by_monkey, modulo)
      }
      for id, count in inspection_count_by_monkey {
        println("Monkey $id inspected items $count times.")
      }
      mut inspection_counts := inspection_count_by_monkey.values()
      inspection_counts.sort(b < a) // sort by descending order
-     monkey_business := reduce(inspection_counts[0..2], fn (t1 u64, t2 u64) u64 { return t1 * t2 })!
+     monkey_business := inspection_counts[0] * inspection_counts[1]
      println("The level of monkey business after $n rounds is $monkey_business\n")
   }
 }
 
-fn run_round(mut monkeys map[int]&Monkey, divide_by_3 bool, mut inspection_count_by_monkey &map[int]u64) {
+fn run_round(mut monkeys map[int]&Monkey, divide_by_3 bool, mut inspection_count_by_monkey &map[int]u64, modulo u64) {
   for mut monkey in monkeys.values() {
     for item in monkey.items {
       mut updated_item := monkey.operation.operate(item)
-      if divide_by_3 { updated_item = updated_item / 3 }
+      if divide_by_3 { updated_item /= 3 } else { updated_item %= modulo }
       monkeys[monkey.target_monkey(updated_item)].items << updated_item
       if _ := inspection_count_by_monkey[monkey.id] { inspection_count_by_monkey[monkey.id]++ }
       else { inspection_count_by_monkey[monkey.id] = u64(1) }
