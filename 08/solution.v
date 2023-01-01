@@ -1,11 +1,6 @@
 import os { read_lines }
 import arrays { reduce, max }
 
-struct ViewResult {
-  visible bool
-  scenic_score int
-}
-
 fn main() {
   lines := read_lines('input.txt')!
   n := lines[0].len
@@ -15,18 +10,18 @@ fn main() {
   mut max_scenic_score := 0
   for y := 0; y <m; y++ {
     for x := 0; x < n; x++ {
-      result := compute_viewing(grid, x, y, n, m)
-      if result.visible {
+      visible, scenic_score := compute_viewing(grid, x, y, n, m)
+      if visible {
         candidates++
       }
-      max_scenic_score = max([result.scenic_score, max_scenic_score])!
+      max_scenic_score = max([scenic_score, max_scenic_score])!
     }
   }
   println('Part 1: There are $candidates candidates')
   println('Part 2: The max scenic score is $max_scenic_score')
 }
 
-fn compute_viewing(grid []rune, x int, y int, n int, m int) ViewResult {
+fn compute_viewing(grid []rune, x int, y int, n int, m int) (bool, int) {
   value := grid[index(x, y, n)]
   max := if n > m { n } else { m }
   mut from_left := true
@@ -59,10 +54,8 @@ fn compute_viewing(grid []rune, x int, y int, n int, m int) ViewResult {
       if grid[index(x, y + i, n)] >= value { from_bottom = false }
     }
   }
-  return ViewResult {
-    visible: from_left || from_top || from_right || from_bottom
-    scenic_score: left_distance * top_distance * right_distance * bottom_distance
-  }
+  return from_left || from_top || from_right || from_bottom,
+    left_distance * top_distance * right_distance * bottom_distance
 }
 
 fn index(x int, y int, n int) int {
