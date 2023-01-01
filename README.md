@@ -35,7 +35,7 @@ v run solution.v
 | 6   | :white_check_mark:  | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | 7   | :white_check_mark:  | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | 8   | :white_check_mark:  | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| 9   | :white_check_mark:  | :white_check_mark: | :x:                | :x:                |
+| 9   | :white_check_mark:  | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | 10  | :white_check_mark:  | :white_check_mark: | :x:                | :x:                |
 | 11  | :white_check_mark:  | :white_check_mark: | :x:                | :x:                |
 | 12  | :white_check_mark:  | :white_check_mark: | :x:                | :x:                |
