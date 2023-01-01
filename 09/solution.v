@@ -63,7 +63,7 @@ fn main() {
 }
 
 // needed for the set/map
-fn (self Knot) hash() string {
+fn (self Knot) str() string {
   return self.x.str() + "," + self.y.str()
 }
 
@@ -94,5 +94,5 @@ fn sign(i int) int {
 
 [inline]
 fn add(mut set &KnotSet, knot Knot) {
-  set[knot.hash()] = knot
+  set[knot.str()] = knot
 }
