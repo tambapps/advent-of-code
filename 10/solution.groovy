@@ -30,7 +30,6 @@ void nextCycle(int value = 0) {
   cycle++
   x += value
   if (cycle in [20, 60, 100, 140, 180, 220]) {
-    println("$cycle * $x = ${cycle * x}")
     sum += cycle * x
   }
 }
