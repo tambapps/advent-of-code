@@ -1,5 +1,6 @@
 import os { read_lines }
 import math { abs }
+import datatypes { Set }
 
 const (
   left = 'L'
@@ -13,19 +14,17 @@ struct Knot {
   y int
 }
 
-type KnotSet = map[string]Knot
-
 fn main() {
   start_position := Knot {
     x: 0
     y: 0
   }
   mut knots := []Knot{len: 10, init: start_position}
-  // V doesn't have sets, so let's use a map as a set
-  mut part1_visits := KnotSet(map[string]Knot{})
-  mut part2_visits := KnotSet(map[string]Knot{})
-  add(mut &part1_visits, start_position)
-  add(mut &part2_visits, start_position)
+  // V doesn't sets of struct, so let's use the string representation
+  mut part1_visits := Set[string]{}
+  mut part2_visits := Set[string]{}
+  part1_visits.add(start_position.str())
+  part2_visits.add(start_position.str())
 
   for line in read_lines('input.txt')! {
     fields := line.split(' ')
@@ -54,12 +53,12 @@ fn main() {
       for i := 1; i < knots.len; i++ {
         knots[i] = knots[i].follow(knots[i - 1])
       }
-      add(mut &part1_visits, knots[1])
-      add(mut &part2_visits, knots.last())
+      part1_visits.add(knots[1].str())
+      part2_visits.add(knots.last().str())
     }
   }
-  println("Part 1: tail visited ${part1_visits.len} different positions")
-  println("Part 2: tail visited ${part2_visits.len} different positions")
+  println("Part 1: tail visited ${part1_visits.size()} different positions")
+  println("Part 2: tail visited ${part2_visits.size()} different positions")
 }
 
 // needed for the set/map
@@ -90,9 +89,4 @@ fn sign(i int) int {
   if i > 0 { return 1 }
   else if i < 0 { return -1 }
   else { return 0 }
-}
-
-[inline]
-fn add(mut set &KnotSet, knot Knot) {
-  set[knot.str()] = knot
 }

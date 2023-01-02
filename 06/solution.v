@@ -1,5 +1,5 @@
 import os { read_file }
-
+import datatypes { Set }
 fn main() {
   text := read_file('input.txt')!
   println('Part 1: marker is at position ' + search_marker_position(text, 4).str())
@@ -17,12 +17,7 @@ fn search_marker_position(text string, window_size int) int {
 }
 
 fn are_all_unique(s string) bool {
-  mut m := map[u8]bool{}
-  for e in s {
-    if m[e] {
-      return false
-    }
-    m[e] = true
-  }
-  return true
+  mut set := Set[rune]{}
+  set.add_all(s.runes())
+  return s.len == set.size()
 }
