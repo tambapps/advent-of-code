@@ -2,7 +2,6 @@ import os { read_lines }
 import math { max, min }
 import arrays
 
-
 struct Point {
   x int
   y int
@@ -12,10 +11,12 @@ enum Type as u8 {
   empty
 }
 
+[inline]
 fn str(x int, y int) string {
   return "(x=$x, y=$y)"
 }
 
+ // TODO get rid of this struct
 struct Cave {
   highest_y int [required]
   with_ground bool
@@ -40,44 +41,56 @@ fn (self &Cave) get(x int, y int) Type {
 fn main() {
   rocks := arrays.flat_map<string, Point>(read_lines('input.txt')!, parse)
   highest_y := arrays.max(rocks.map(it.y))!
-  mut cave1 := Cave {
-    highest_y: highest_y
-  }
-  mut cave2 := Cave {
-    highest_y: highest_y
-    with_ground: true
-  }
+  mut cave1 := map[string]Type{}
+  mut cave2 := map[string]Type{}
   for rock in rocks {
-    cave1.put(rock.x, rock.y, Type.rock)
-    cave2.put(rock.x, rock.y, Type.rock)
+    cave1[str(rock.x, rock.y)] = Type.rock
+    cave2[str(rock.x, rock.y)] = Type.rock
   }
   mut count := 0
-  for !cave1.fall() {
+  for !fall_pt1(mut cave1, highest_y) {
     count++
   }
   println('Part 1: $count units of sand came to rest')
   count = 1 // because we need one more in order to finally know that the source is blocked
-  for !cave2.fall() {
+  for !fall_pt2(mut cave2, highest_y + 2) {
     count++
   }
   println('Part 2: $count units of sand came to rest')
 }
 
 // return true if should not fall anymore after
-fn (mut self Cave) fall() bool {
+fn fall_pt1(mut cave map[string]Type, highest_y int) bool {
+  // TODO try to optimize conditions
   mut x := 500
   mut y := 0
-  for (self.with_ground || y < self.highest_y) && (self.get(x, y + 1) == Type.empty
-    || self.get(x - 1, y + 1) == Type.empty || self.get(x + 1, y + 1) == Type.empty) {
-    if self.get(x, y + 1) != Type.empty && self.get(x - 1, y + 1) == Type.empty {
+  for (y < highest_y) && (str(x, y + 1) !in cave
+    || str(x - 1, y + 1) !in cave || str(x + 1, y + 1) !in cave) {
+    if str(x, y + 1) in cave && str(x - 1, y + 1) !in cave {
       x--
-    } else if self.get(x, y + 1) != Type.empty && self.get(x + 1, y + 1) == Type.empty {
+    } else if str(x, y + 1) in cave && str(x + 1, y + 1) !in cave {
       x++
     }
     y++
   }
-  self.put(x, y, Type.rock)
-  return if self.with_ground { x == 500 && y == 0 } else { y >= self.highest_y }
+  cave[str(x, y)] = Type.rock
+  return y >= highest_y
+}
+fn fall_pt2(mut cave map[string]Type, highest_y int) bool {
+    // TODO not handling ground (and therefore not working) and try to optimize conditions
+  mut x := 500
+  mut y := 0
+  for (y < highest_y) && (str(x, y + 1) !in cave
+  || str(x - 1, y + 1) !in cave || str(x + 1, y + 1) !in cave) {
+    if str(x, y + 1) in cave && str(x - 1, y + 1) !in cave {
+      x--
+    } else if str(x, y + 1) in cave && str(x + 1, y + 1) !in cave {
+      x++
+    }
+    y++
+  }
+  cave[str(x, y)] = Type.rock
+  return x == 500 && y == 0
 }
 
 // parsing stuff
