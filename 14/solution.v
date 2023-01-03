@@ -47,50 +47,72 @@ fn main() {
     cave1[str(rock.x, rock.y)] = Type.rock
     cave2[str(rock.x, rock.y)] = Type.rock
   }
-  mut count := 0
-  for !fall_pt1(mut cave1, highest_y) {
-    count++
-  }
+  mut count := fall_pt1(mut cave1, highest_y)
   println('Part 1: $count units of sand came to rest')
-  count = 1 // because we need one more in order to finally know that the source is blocked
-  for !fall_pt2(mut cave2, highest_y + 2) {
-    count++
-  }
+  count = fall_pt2(mut cave2, highest_y + 2)
   println('Part 2: $count units of sand came to rest')
 }
 
-// return true if should not fall anymore after
-fn fall_pt1(mut cave map[string]Type, highest_y int) bool {
-  // TODO try to optimize conditions
+// fall_pt1 return true if should not fall anymore after
+fn fall_pt1(mut cave map[string]Type, highest_y int) int {
   mut x := 500
   mut y := 0
-  for (y < highest_y) && (str(x, y + 1) !in cave
-    || str(x - 1, y + 1) !in cave || str(x + 1, y + 1) !in cave) {
-    if str(x, y + 1) in cave && str(x - 1, y + 1) !in cave {
+  mut count := 0
+  for y < highest_y {
+    if str(x, y + 1) !in cave {
+      y++
+    } else if str(x - 1, y + 1) !in cave {
       x--
-    } else if str(x, y + 1) in cave && str(x + 1, y + 1) !in cave {
+      y++
+    } else if str(x + 1, y + 1) !in cave {
       x++
+      y++
+    } else { // couldn't go anywhere
+      cave[str(x, y)] = Type.rock
+      x = 500
+      y = 0
+      count++
     }
-    y++
   }
-  cave[str(x, y)] = Type.rock
-  return y >= highest_y
+  return count
 }
-fn fall_pt2(mut cave map[string]Type, highest_y int) bool {
+fn fall_pt2(mut cave map[string]Type, floor_y int) int {
     // TODO not handling ground (and therefore not working) and try to optimize conditions
   mut x := 500
   mut y := 0
-  for (y < highest_y) && (str(x, y + 1) !in cave
-  || str(x - 1, y + 1) !in cave || str(x + 1, y + 1) !in cave) {
-    if str(x, y + 1) in cave && str(x - 1, y + 1) !in cave {
+  mut count := 0
+  mut new_drop := true
+  for {
+    if y + 1 == floor_y {
+      cave[str(x, y)] = Type.rock
+      // dropping a new sand
+      x = 500
+      y = 0
+      count++
+      new_drop = true
+    } else if str(x, y + 1) !in cave {
+      y++
+      new_drop = false
+    } else if str(x - 1, y + 1) !in cave {
       x--
-    } else if str(x, y + 1) in cave && str(x + 1, y + 1) !in cave {
+      y++
+      new_drop = false
+    } else if str(x + 1, y + 1) !in cave {
       x++
+      y++
+      new_drop = false
+    } else if new_drop { // new_drop and couldn't go anywhere? this is over
+      break
+    } else { // couldn't go anywhere
+      cave[str(x, y)] = Type.rock
+      // dropping a new sand
+      x = 500
+      y = 0
+      count++
+      new_drop = true
     }
-    y++
   }
-  cave[str(x, y)] = Type.rock
-  return x == 500 && y == 0
+  return count
 }
 
 // parsing stuff
