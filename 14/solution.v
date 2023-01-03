@@ -82,24 +82,17 @@ fn fall_pt2(mut cave map[string]bool, floor_y int) int {
   return count
 }
 
-struct Point {
-  x int
-  y int
-}
 fn parse(line string) []string {
-  line_ends := line.split(' -> ').map(fn (c string) Point {
+  line_ends := line.split(' -> ').map(fn (c string) []int {
     fields := c.split(',').map(it.int())
-    return Point {
-      x: fields[0]
-      y: fields[1]
-    }
+    return fields // x = fields[0], y = fields[1]
   })
   mut rocks := []string{}
   for i := 1; i < line_ends.len; i++ {
     start := line_ends[i - 1]
     end := line_ends[i]
-    for x in min(start.x, end.x)..(max(start.x, end.x) + 1) {
-      for y in min(start.y, end.y)..(max(start.y, end.y) + 1) {
+    for x in min(start[0], end[0])..(max(start[0], end[0]) + 1) {
+      for y in min(start[1], end[1])..(max(start[1], end[1]) + 1) {
         rocks << str(x, y)
       }
     }
