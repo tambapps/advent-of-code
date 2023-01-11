@@ -1,11 +1,5 @@
 import os { read_lines }
 
-
-
-struct Monkey {
-  name string
-  operation fn () i64
-}
 interface Yelling {
   yell(yells &map[string]Yelling) i64
 }
@@ -14,6 +8,7 @@ struct ConstantYelling {
   value i64
 }
 
+ // argument unused but needed for interface
 fn (self &ConstantYelling) yell(yells &map[string]Yelling) i64 {
   return self.value
 }
@@ -41,6 +36,7 @@ fn (self &OperationYelling) yell(yells &map[string]Yelling) i64 {
   }
 }
 
+[inline]
 fn get_operand_value(yells &map[string]Yelling, op Operand) i64 {
   return match op {
     string { (*yells)[op].yell(yells) }
