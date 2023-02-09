@@ -1,0 +1,12 @@
+File f = new File("input.txt")
+
+list<int> list = [0] // list of primitive ints
+for (String line in f.lineIterator()) {
+  if (!line.isEmpty()) list.last += line.toInt()
+  else list << 0
+}
+list.sortReverse()
+// keeping only the 3 highest numbers
+list = list[0..2]
+println("The 3 highest numbers of calories transported are\n- " + list.join("\n- "))
+println("\nSum: " + list.sum())
