@@ -1,0 +1,32 @@
+
+
+int part1Score = 0
+int part2Score = 0
+List<String> compartmentGroup = []
+for (String line in new File("input.txt").lineIterator()) {
+  int rucksackSize = line.length / 2
+  list<char> sack1 = line[0..<rucksackSize]
+  list<char> sack2 = line[rucksackSize..<line.length]
+  char commonItem = sack1.findCharacter { sack2.contains(it) }
+  part1Score+= priority(commonItem)
+
+  // part 2
+  compartmentGroup << line
+  if (compartmentGroup.length == 3) {
+    // TODO handle better generics, to avoid these ugly toString() calls :(
+    for (char c in compartmentGroup[0].toString()) {
+      if (compartmentGroup[1].toString().contains(c) && compartmentGroup[2].toString().contains(c)) {
+        part2Score+= priority(c)
+        break
+      }
+    }
+    compartmentGroup.clear()
+  }
+}
+
+fun priority(char c) int {
+  return c.isUpperCase() ? c - `A` + 27 : c - `a` + 1
+}
+
+println("Part 1: The sum of the priorities of those item types is $part1Score")
+println("Part 2: The sum of the priorities of those item types is $part2Score")
