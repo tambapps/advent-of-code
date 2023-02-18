@@ -1,0 +1,48 @@
+File f = new File("input.txt")
+int part1Score = 0
+int part2Score = 0
+
+private static final char ROCK = `A`
+private static final char PAPER = `B`
+private static final char SCISSORS = `C`
+private static final map<char, Character> PART1_MAP = [
+  `X`: ROCK,
+  `Y`: PAPER,
+  `Z`: SCISSORS
+]
+private static final map<char, Character> WEAKNESS = [
+  ROCK: PAPER,
+  PAPER: SCISSORS,
+  SCISSORS: ROCK
+]
+
+for (String line in f.lineIterator()) {
+  def (char against, char xyz) = [line[0], line[2]]
+  part1Score+= battleScore(PART1_MAP[xyz] as char, against)
+  char me = switch(xyz) {
+    `X` -> WEAKNESS[WEAKNESS[against] as char]
+    `Y` -> against
+    `Z` -> WEAKNESS[against]
+    else -> ` ` // marcel doesn't have exceptions yet. so let's just hope this case never happens
+  }
+  part2Score+= battleScore(me, against)
+}
+
+println("Part 1: score is $part1Score")
+println("Part 2: score is $part2Score")
+
+fun battleScore(char rps, char against) int {
+  return score(rps) + outcome(rps, against)
+}
+
+fun outcome(char rps, char against) int {
+  return when {
+    rps == WEAKNESS[against] -> 6 // win
+    against == WEAKNESS[rps] -> 0 // lose
+    else -> 3 // draw
+  }
+}
+
+fun score(char rps) int {
+  return (rps - `A` + 1) as int
+}
