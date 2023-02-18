@@ -17,7 +17,7 @@ private static final map<char, Character> WEAKNESS = [
 ]
 
 for (String line in f.lineIterator()) {
-  def (char against, char xyz) = [line[0], line[2]]
+  def (char against, char xyz) = line.split(" ") // automatic casting String to char (charAt(0))
   part1Score+= battleScore(PART1_MAP[xyz] as char, against)
   char me = switch(xyz) {
     `X` -> WEAKNESS[WEAKNESS[against] as char]
