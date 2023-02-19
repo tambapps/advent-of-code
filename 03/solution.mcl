@@ -13,9 +13,8 @@ for (String line in new File("input.txt").lineIterator()) {
   // part 2
   compartmentGroup << line
   if (compartmentGroup.length == 3) {
-    // TODO handle better generics, to avoid these ugly toString() calls :(
-    for (char c in compartmentGroup[0].toString()) {
-      if (compartmentGroup[1].toString().contains(c) && compartmentGroup[2].toString().contains(c)) {
+    for (char c in compartmentGroup[0]) {
+      if (compartmentGroup[1].contains(c) && compartmentGroup[2].contains(c)) {
         part2Score+= priority(c)
         break
       }
