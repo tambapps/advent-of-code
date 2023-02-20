@@ -36,11 +36,11 @@ v run solution.v
   <summary>2022</summary>
 
 | Day | Part 1<br/>Marcel  | Part 2<br/>Marcel  | Part 1<br/>Groovy   | Part 2<br/>Groovy  | Part 1<br/>V       | Part 2<br/>V       |
-|-----|:-------------------|:-------------------|---------------------|--------------------|--------------------|--------------------|
-| 1   | :white_check_mark: | :white_check_mark: | :white_check_mark:	 | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+|-----|--------------------|--------------------|---------------------|--------------------|--------------------|--------------------|
+| 1   | :white_check_mark: | :white_check_mark: | :white_check_mark:  | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | 2   | :white_check_mark: | :white_check_mark: | :white_check_mark:  | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | 3   | :white_check_mark: | :white_check_mark: | :white_check_mark:  | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| 4   | :x:                | :x:                | :white_check_mark:  | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| 4   | :white_check_mark: | :white_check_mark: | :white_check_mark:  | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | 5   | :x:                | :x:                | :white_check_mark:  | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | 6   | :x:                | :x:                | :white_check_mark:  | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | 7   | :x:                | :x:                | :white_check_mark:  | :white_check_mark: | :white_check_mark: | :white_check_mark: |

@@ -1,0 +1,17 @@
+File f = new File('input.txt')
+
+def (int part1Count, int part2Count) = [0, 0]
+for (String line in f.lineIterator()) {
+  // first group is whole match, we don't care about that
+  def (int r1From, int r1To, int r2From, int r2To) = (line =~ /(\d+)-(\d+),(\d+)-(\d+)/)
+    .definedGroups()
+    .mapToInt { it.toInt() }
+  IntRange range1 = r1From..r1To
+  IntRange range2 = r2From..r2To
+
+  if (range1.contains(range2) || range2.contains(range1)) part1Count++
+  if (range1.intersects(range2)) part2Count++
+}
+
+println("Part 1: $part1Count assignments have one range that fully contains the other")
+println("Part 2: $part2Count assignments have one range that overlaps the other")
