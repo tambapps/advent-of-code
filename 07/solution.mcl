@@ -1,0 +1,50 @@
+
+
+final Directory root = new Directory(name: 'root')
+Directory currentDir = root
+final List<Directory> allDirectories = []
+
+for (String line in new File('input.txt').lineIterator()) {
+  if (line.startsWith('$ cd')) {
+    String targetDir = line.substring(line.lastIndexOf(` `) + 1)
+
+    currentDir = switch(targetDir) {
+      '..' -> currentDir.parent
+      '/' -> root
+      else -> currentDir.children.find { it.name == targetDir }
+    }
+  } else if (!line.startsWith('$ ls')) { // result of a $ ls
+    def (String arg1, String arg2) = line.split(' ')
+    if (arg1 == 'dir') {
+      Directory dir = new Directory(parent: currentDir, name: arg2)
+      allDirectories << dir
+      currentDir.children << dir
+    } else {
+      int fileSize = arg1.toInt()
+      currentDir.size+= fileSize
+      Directory d = currentDir
+      while (d.parent != null) {
+        d = d.parent
+        d.size += fileSize
+      }
+    }
+  }
+}
+
+list<int> allSizes = allDirectories.mapToInt { it.size }
+int part1Sum = allSizes.filter { it <= 100000 }
+  .sum()
+
+println("Part 1: the sum of the total size of all directories with a size of at most 100000 is $part1Sum")
+int availableSpace = 70000000 - root.size
+int space_needed = 30000000 - availableSpace
+int part2Size = allSizes.filter { it >= space_needed }
+  .min()
+println("Part 2: the size of the directory to delete is $part2Size")
+
+class Directory {
+  Directory parent
+  String name
+  int size
+  final List<Directory> children = []
+}
