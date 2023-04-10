@@ -23,7 +23,7 @@ for (String line in new File("input.txt").lineIterator()) {
   }
 }
 
-fun priority(char c) int {
+fun int priority(char c) {
   return c.isUpperCase() ? c - `A` + 27 : c - `a` + 1
 }
 
