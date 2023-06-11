@@ -11,7 +11,7 @@ for (String line in new File('input.txt').readLines()) {
     currentDir = switch(targetDir) {
       '..' -> currentDir.parent
       '/' -> root
-      else -> currentDir.children.find { it.name == targetDir }
+      else -> currentDir.children.find { Directory d -> d.name == targetDir }
     }
   } else if (!line.startsWith('$ ls')) { // result of a $ ls
     def (String arg1, String arg2) = line.split(' ')
@@ -31,7 +31,7 @@ for (String line in new File('input.txt').readLines()) {
   }
 }
 
-list<int> allSizes = allDirectories.mapToInt { String s -> s.size }
+list<int> allSizes = allDirectories.mapToInt { Directory d -> d.size }
 int part1Sum = allSizes.filter { it <= 100000 }
   .sum()
 
