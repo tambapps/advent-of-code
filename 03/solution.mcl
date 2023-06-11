@@ -3,7 +3,7 @@
 int part1Score = 0
 int part2Score = 0
 List<String> compartmentGroup = []
-for (String line in new File("input.txt").lineIterator()) {
+for (String line in new File("input.txt").readLines()) {
   int rucksackSize = line.length / 2
   list<char> sack1 = line[0..<rucksackSize]
   list<char> sack2 = line[rucksackSize..<line.length]

@@ -1,7 +1,7 @@
 File f = new File('input.txt')
 
 def (int part1Count, int part2Count) = [0, 0]
-for (String line in f.lineIterator()) {
+for (String line in f.readLines()) {
   // first group is whole match, we don't care about that
   def (int r1From, int r1To, int r2From, int r2To) = (line =~ /(\d+)-(\d+),(\d+)-(\d+)/)
     .definedGroups()

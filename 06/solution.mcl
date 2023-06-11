@@ -1,5 +1,5 @@
 
-String text = new File('input.txt').text
+String text = new File('input.txt').readText()
 Integer marker1 = null
 Integer marker2 = null
 int i = 0
