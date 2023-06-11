@@ -5,7 +5,7 @@ for (String line in f.readLines()) {
   // first group is whole match, we don't care about that
   def (int r1From, int r1To, int r2From, int r2To) = (line =~ /(\d+)-(\d+),(\d+)-(\d+)/)
     .definedGroups()
-    .mapToInt { it.toInt() }
+    .mapToInt { String s -> s.toInt() }
   IntRange range1 = r1From..r1To
   IntRange range2 = r2From..r2To
 

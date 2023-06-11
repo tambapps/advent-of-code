@@ -13,8 +13,9 @@ for (String line in new File("input.txt").readLines()) {
   // part 2
   compartmentGroup << line
   if (compartmentGroup.length == 3) {
-    for (char c in compartmentGroup[0]) {
-      if (compartmentGroup[1].contains(c) && compartmentGroup[2].contains(c)) {
+    def (String sack1, String sack2, String sack3) = compartmentGroup
+    for (char c in sack1) {
+      if (sack2.contains(c) && sack3.contains(c)) {
         part2Score+= priority(c)
         break
       }
