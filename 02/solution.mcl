@@ -11,9 +11,9 @@ private static final map<char, Character> PART1_MAP = [
   `Z`: SCISSORS
 ]
 private static final map<char, Character> WEAKNESS = [
-  ROCK: PAPER,
-  PAPER: SCISSORS,
-  SCISSORS: ROCK
+  (ROCK): PAPER,
+  (PAPER): SCISSORS,
+  (SCISSORS): ROCK
 ]
 
 for (String line in f.readLines()) {
