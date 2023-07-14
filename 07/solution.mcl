@@ -2,7 +2,7 @@
 
 final Directory root = new Directory(name: 'root')
 Directory currentDir = root
-final List<Directory> allDirectories = []
+final List allDirectories = []
 
 for (String line in new File('input.txt').readLines()) {
   if (line.startsWith('$ cd')) {
@@ -46,5 +46,5 @@ class Directory {
   Directory parent
   String name
   int size
-  final List<Directory> children = []
+  final List children = []
 }
