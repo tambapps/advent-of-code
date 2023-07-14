@@ -5,12 +5,12 @@ int part2Score = 0
 private static final char ROCK = `A`
 private static final char PAPER = `B`
 private static final char SCISSORS = `C`
-private static final map<char, Character> PART1_MAP = [
+private static final Map PART1_MAP = [
   `X`: ROCK,
   `Y`: PAPER,
   `Z`: SCISSORS
 ]
-private static final map<char, Character> WEAKNESS = [
+private static final Map WEAKNESS = [
   (ROCK): PAPER,
   (PAPER): SCISSORS,
   (SCISSORS): ROCK
