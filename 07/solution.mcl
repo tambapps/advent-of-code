@@ -47,4 +47,7 @@ class Directory {
   String name
   int size
   final List children = []
+
+  constructor(this.name)
+  constructor(this.parent, this.name)
 }
