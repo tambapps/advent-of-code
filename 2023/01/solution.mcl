@@ -20,8 +20,9 @@ for (String line in new File('input.txt').readLines()) {
   sum1 += toNumber(first1, last1)
 
   // part 2
-  list<char> calibrationDigits = findAllCalibrationDigits(line)
-  sum2 += toNumber(calibrationDigits.first, calibrationDigits.last)
+  char first2 = findCalibrationDigits(line, 0..<line.length)
+  char last2 = findCalibrationDigits(line, (line.length - 1)..0)
+  sum2 += toNumber(first2, last2)
 }
 println("Part 1: The sum of all of the calibration values is $sum1")
 println("Part 2: The sum of all of the calibration values is $sum2")
@@ -29,19 +30,13 @@ println("Part 2: The sum of all of the calibration values is $sum2")
 // two digits to number
 fun int toNumber(char firstDigit, char lastDigit) -> (firstDigit - `0`) * 10 + lastDigit - `0`
 
-fun list<char> findAllCalibrationDigits(String line) {
-  list<char> list = []
-  int i = 0
-  while (i < line.length) {
-    if (line[i].isDigit()) {
-      list.add(line[i++])
-      continue
-    }
+fun char findCalibrationDigits(String line, IntRange range) {
+  for (int i in range) {
+    if (line[i].isDigit()) return line[i]
     String wordDigit = WORD_DIGITS.keySet().find { String it -> line?[i..<(i + it.length)] == it }
     if (wordDigit != null) {
-      list.add(WORD_DIGITS[wordDigit] as char)
+      return WORD_DIGITS[wordDigit] as char
     }
-    i++
   }
-  return list
+  throw new RuntimeException()
 }
