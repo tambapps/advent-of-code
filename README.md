@@ -32,6 +32,18 @@ v run solution.v
 ```
 
 ## Progress
+
+<details>
+  <summary>2023</summary>
+
+| Day | Part 1<br/>Marcel  | Part 2<br/>Marcel  |
+|-----|--------------------|--------------------|
+| 1   | :white_check_mark: | :white_check_mark: |
+| 2   | :x:                | :x:                |
+
+</details>
+
+
 <details>
   <summary>2022</summary>
 

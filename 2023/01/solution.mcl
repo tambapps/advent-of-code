@@ -1,0 +1,47 @@
+private static final Map WORD_DIGITS = [
+  "one": `1`,
+  "two": `2`,
+  "three": `3`,
+  "four": `4`,
+  "five": `5`,
+  "six": `6`,
+  "seven": `7`,
+  "eight": `8`,
+  "nine": `9`,
+]
+
+private int sum1 = 0
+private int sum2 = 0
+
+for (String line in new File('input.txt').readLines()) {
+  // part 1
+  char first1 = line.findCharacter { it.isDigit() }
+  char last1 = line.findLastCharacter { it.isDigit() }
+  sum1 += toNumber(first1, last1)
+
+  // part 2
+  list<char> calibrationDigits = findAllCalibrationDigits(line)
+  sum2 += toNumber(calibrationDigits.first, calibrationDigits.last)
+}
+println("Part 1: The sum of all of the calibration values is $sum1")
+println("Part 2: The sum of all of the calibration values is $sum2")
+
+// two digits to number
+fun int toNumber(char firstDigit, char lastDigit) -> (firstDigit - `0`) * 10 + lastDigit - `0`
+
+fun list<char> findAllCalibrationDigits(String line) {
+  list<char> list = []
+  int i = 0
+  while (i < line.length) {
+    if (line[i].isDigit()) {
+      list.add(line[i++])
+      continue
+    }
+    String wordDigit = WORD_DIGITS.keySet().find { String it -> line?[i..<(i + it.length)] == it }
+    if (wordDigit != null) {
+      list.add(WORD_DIGITS[wordDigit] as char)
+    }
+    i++
+  }
+  return list
+}
