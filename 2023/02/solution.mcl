@@ -1,0 +1,69 @@
+class Hand {
+  int blue
+  int red
+  int green
+
+  // TODO implement macro function or something to generate toString()
+  fun String toString() -> "Hand(red=$red, green=$green, blue=$blue)"
+}
+
+static final String RED = "red"
+static final String GREEN = "green"
+static final String BLUE = "blue"
+
+static final int RED_LIMIT = 12
+static final int GREEN_LIMIT = 13
+static final int BLUE_LIMIT = 14
+
+Map gameHands = [:]
+// parsing
+for (String line in new File('input.txt').readLines()) {
+  def (String part1, String part2) = line.split(":")
+  int gameId = part1.substring(part1.lastIndexOf(" ") + 1, part1.length).toInt()
+  List hands = []
+  for (String handStr in part2.split(";")) {
+    Hand hand = new Hand()
+    for (String handColor in handStr.split(",")) {
+      def (String nbStr, String color) = handColor.trim().split(" ")
+      int n = nbStr.toInt()
+      switch(color) {
+        BLUE -> hand.blue+= n
+        RED -> hand.red+= n
+        GREEN -> hand.green+= n
+      }
+    }
+    hands << hand
+  }
+  gameHands[gameId] = hands
+}
+
+List possibleHands = []
+
+// part 1
+// TODO implement for in map
+for (int gameId in gameHands.keySet()) {
+  List gameHand = gameHands[gameId]
+  if (gameHand.all { Hand hand -> hand.red <= RED_LIMIT && hand.green <= GREEN_LIMIT && hand.blue <= BLUE_LIMIT }) {
+    possibleHands << gameId
+  }
+}
+
+println("Part 1: value=" + possibleHands.sumInt())
+
+// part 2
+int sum = 0
+for (int gameId in gameHands.keySet()) {
+  List gameHand = gameHands[gameId]
+  Hand maxHand = maxHand(gameHands[gameId] as List)
+  sum += maxHand.red * maxHand.green * maxHand.blue
+}
+println("Part 2: value=" + sum)
+
+fun int max(int a, int b) -> a >= b ? a : b
+
+fun Hand maxHand(List hands) -> hands.reduce(new Hand()) { Hand seed, Hand h ->
+  seed.red = max(seed.red, h.red)
+  seed.blue = max(seed.blue, h.blue)
+  seed.green = max(seed.green, h.green)
+  seed
+}
