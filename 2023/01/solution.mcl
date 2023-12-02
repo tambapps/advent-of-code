@@ -1,13 +1,13 @@
-private static final Map WORD_DIGITS = [
-  "one": `1`,
-  "two": `2`,
-  "three": `3`,
-  "four": `4`,
-  "five": `5`,
-  "six": `6`,
-  "seven": `7`,
-  "eight": `8`,
-  "nine": `9`,
+private static final Map MAPPINGS = [
+  "1": `1`, "one": `1`,
+  "2": `2`, "two": `2`,
+  "3": `3`, "three": `3`,
+  "4": `4`, "four": `4`,
+  "5": `5`, "five": `5`,
+  "6": `6`, "six": `6`,
+  "7": `7`, "seven": `7`,
+  "8": `8`, "eight": `8`,
+  "9": `9`, "nine": `9`,
 ]
 
 private int sum1 = 0
@@ -32,11 +32,8 @@ fun int toNumber(char firstDigit, char lastDigit) -> (firstDigit - `0`) * 10 + l
 
 fun char findCalibrationDigits(String line, IntRange range) {
   for (int i in range) {
-    if (line[i].isDigit()) return line[i]
-    String wordDigit = WORD_DIGITS.keySet().find { String it -> line?[i..<(i + it.length)] == it }
-    if (wordDigit != null) {
-      return WORD_DIGITS[wordDigit] as char
-    }
+    String wordDigit = MAPPINGS.keySet().find { String it -> line?[i..<(i + it.length)] == it }
+    if (wordDigit != null) return MAPPINGS[wordDigit]
   }
   throw new RuntimeException()
 }
