@@ -1,7 +1,6 @@
 # Advent Of Code
 
-Doing the [advent of code](https://adventofcode.com) using [Marcel](https://tambapps.github.io/marcel/) (my own programming language), 
-[Groovy](https://groovy-lang.org/) and [V](https://vlang.io/).
+Doing the [advent of code](https://adventofcode.com) using [Marcel](https://tambapps.github.io/marcel/) (my own programming language).
 
 ## Marcel
 To run these solutions, you'll need to [install Marcel](https://tambapps.github.io/marcel/getting-started/installation.html).
@@ -13,6 +12,8 @@ marcl solution.mcl
 ```
 
 ## Groovy
+In past years, I have made some programs in Groovy.
+
 Some solutions are to be run using static compilation for better performance. For that add the `--compile-static`
 argument like in the below example
 
@@ -23,6 +24,7 @@ groovy --compile-static solution.groovy
 `--compile-static` must be **before** the `solution.groovy`, or else it will be treated as an argument for the script
 
 ## V
+In past years, I have made some programs in V.
 
 You'll need to [install V](https://github.com/vlang/v#installing-v-from-source) to run such solutions.
 
@@ -39,7 +41,9 @@ v run solution.v
 | Day | Part 1<br/>Marcel  | Part 2<br/>Marcel  |
 |-----|--------------------|--------------------|
 | 1   | :white_check_mark: | :white_check_mark: |
-| 2   | :x:                | :x:                |
+| 2   | :white_check_mark: | :white_check_mark: |
+| 3   | :white_check_mark: | :white_check_mark: |
+| 4   | :x:                | :x:                |
 
 </details>
 
