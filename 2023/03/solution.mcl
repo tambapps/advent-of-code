@@ -38,8 +38,10 @@ for (int y; y < height; y++) {
 
 println("Part 1: value=$sum")
 sum = 0 // part 2
-for ((Object _, List l) in gearValuesMap) {
-  if (l.length == 2) sum += (l.first as int) * (l.last as int)
+for (List l in gearValuesMap.values()) {
+  if (l.length == 2) {
+    sum += (l.first as int) * (l.last as int)
+  }
 }
 println("Part 2: value=$sum")
 
