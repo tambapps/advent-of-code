@@ -1,0 +1,80 @@
+private static final Character GEAR = `*`
+
+private list<char> grid = []
+private int n;
+private int height;
+
+// fill grid
+for (String line in new File('input.txt').readLines()) {
+  if (n == 0) n = line.length()
+  grid.addAll(line)
+  height++
+}
+
+// parsing
+int sum = 0
+Map gearValuesMap = [:]
+for (int y; y < height; y++) {
+  for (int x = 0; x < n; x++) {
+    if (!this[x, y].isDigit()) continue
+    int startX = x
+    while (x < n && this[x, y].isDigit()) {
+      if (hasAdjacentSymbol(x, y)) {
+        Integer adjacentGearPos = hasAdjacentGearPos(x, y)
+        while (x < n && this[x, y].isDigit()) {
+          if (adjacentGearPos == null) adjacentGearPos = hasAdjacentGearPos(x, y)
+          x++ // skip to the end of the number
+        }
+        int number = grid.subSequence(getIndex(startX, y), getIndex(x, y)).toString().toInt()
+        sum += number
+        if (adjacentGearPos != null) {
+          List l = gearValuesMap.computeIfAbsent(adjacentGearPos) { [] as List }
+          l.add(number)
+        }
+      } else x++
+    }
+  }
+}
+
+println("Part 1: value=$sum")
+sum = 0 // part 2
+for ((Object _, List l) in gearValuesMap) {
+  if (l.length == 2) sum += (l.first as int) * (l.last as int)
+}
+println("Part 2: value=$sum")
+
+private fun bool hasAdjacentSymbol(int x, int y) {
+  return isSymbol(x - 1, y) || isSymbol(x + 1, y)
+    || isSymbol(x, y - 1) || isSymbol(x, y + 1)
+    || isSymbol(x + 1, y - 1) || isSymbol(x + 1, y + 1)
+    || isSymbol(x - 1, y - 1) || isSymbol(x - 1, y + 1)
+}
+
+private fun Integer hasAdjacentGearPos(int x, int y) {
+  return when {
+    this?[x - 1, y] == GEAR -> getIndex(x - 1, y)
+    this?[x + 1, y] == GEAR -> getIndex(x + 1, y)
+    this?[x, y - 1] == GEAR -> getIndex(x, y - 1)
+    this?[x, y + 1] == GEAR -> getIndex(x, y + 1)
+    this?[x + 1, y - 1] == GEAR -> getIndex(x + 1, y - 1)
+    this?[x + 1, y + 1] == GEAR -> getIndex(x + 1, y + 1)
+    this?[x - 1, y - 1] == GEAR -> getIndex(x - 1, y - 1)
+    this?[x - 1, y + 1] == GEAR -> getIndex(x - 1, y + 1)
+    else -> null
+  }
+}
+
+private fun bool isSymbol(int x, int y) {
+  Character c = this?[x, y]
+  // TODO bug with not operator parsing without parenthesis it doesn't work. write test for that once it is fixed
+  return c != null && (!c.isDigit()) && c != `.`
+}
+
+private fun char getAt(int i, int j) -> grid[getIndex(i, j)]
+
+private fun Character getAtSafe(int i, int j) {
+  int index = getIndex(i, j);
+  return index < grid.length && index >= 0 ? grid[index] : null
+}
+
+private fun int getIndex(int i, int j) ->  j * n + i
