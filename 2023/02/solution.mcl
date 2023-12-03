@@ -40,9 +40,7 @@ for (String line in new File('input.txt').readLines()) {
 List possibleHands = []
 
 // part 1
-// TODO implement for in map
-for (int gameId in gameHands.keySet()) {
-  List gameHand = gameHands[gameId]
+for ((int gameId, List gameHand) in gameHands) {
   if (gameHand.all { Hand hand -> hand.red <= RED_LIMIT && hand.green <= GREEN_LIMIT && hand.blue <= BLUE_LIMIT }) {
     possibleHands << gameId
   }
@@ -52,8 +50,7 @@ println("Part 1: value=" + possibleHands.sumInt())
 
 // part 2
 int sum = 0
-for (int gameId in gameHands.keySet()) {
-  List gameHand = gameHands[gameId]
+for ((int gameId, List gameHand) in gameHands) {
   Hand maxHand = maxHand(gameHands[gameId] as List)
   sum += maxHand.red * maxHand.green * maxHand.blue
 }
