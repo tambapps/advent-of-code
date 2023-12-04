@@ -1,0 +1,29 @@
+Map cardWinsCountMap = [:] // card ID -> count of winning numbers
+
+int sum = 0
+int n = 0
+for (String line in new File('input.txt').readLines()) {
+  def (list<int> winningNumbers, list<int> myNumbers) = line.substring(line.indexOf(':') + 1)
+    .split("\\|").map { String listStr ->
+      listStr.trim().split('\\s+').mapToInt { String it -> it.toInt() }
+    }
+    int winningNumbersCount = myNumbers.count { winningNumbers.contains(it) }
+    if (winningNumbersCount > 0) sum+= pow(2, winningNumbersCount - 1)
+    cardWinsCountMap[++n] = winningNumbersCount
+}
+println("Part 1: value=$sum")
+
+List wonCardIds = (1..n).toList()
+int i = 0
+while (i < wonCardIds.size()) {
+  int cardId = wonCardIds[i]
+  int winningNumbersCount = cardWinsCountMap[cardId]
+  for (int j = 1; j <= winningNumbersCount; j++) {
+    wonCardIds << cardId + j
+  }
+  i++
+}
+
+println("Part 2: value=${wonCardIds.size()}")
+
+fun int pow(int n, int p) -> p == 0 ? 1 : n * pow(n, p - 1)
