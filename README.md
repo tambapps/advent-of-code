@@ -43,7 +43,7 @@ v run solution.v
 | 1   | :white_check_mark: | :white_check_mark: |
 | 2   | :white_check_mark: | :white_check_mark: |
 | 3   | :white_check_mark: | :white_check_mark: |
-| 4   | :x:                | :x:                |
+| 4   | :white_check_mark: | :white_check_mark: |
 
 </details>
 
