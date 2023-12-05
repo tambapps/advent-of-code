@@ -1,0 +1,82 @@
+private int i = 0
+// TODO make try-with-resources work
+private BufferedReader reader = new BufferedReader(new FileReader('input.txt'))
+
+private list<long> seeds = parseSeeds()
+private RangeMap seedToSoilMap = parseMap()
+private RangeMap soilToFertilizer = parseMap()
+private RangeMap fertilizerToWater = parseMap()
+private RangeMap waterToLight = parseMap()
+private RangeMap lightToTemperature = parseMap()
+private RangeMap temperatureToHumidity = parseMap()
+private RangeMap humidityToLocation = parseMap()
+
+println("Part 1: value=" + seeds.mapToLong { findLocation(it) }.min())
+
+reader.close()
+
+fun RangeMap parseMap() {
+  RangeMap map = new RangeMap()
+  while (String line = next()) {
+    def (long destRangeStart, long sourceRangeStart, long rangeLength) = line.split(' ').mapToLong { String it -> it.toLong() }
+    map.add(new RangeMapping(destRangeStart, sourceRangeStart, rangeLength))
+  }
+  next() // skip next useless line
+  return map
+}
+
+fun long findLocation(long seed) -> humidityToLocation[
+  temperatureToHumidity[
+    lightToTemperature[
+      waterToLight[
+        fertilizerToWater[
+          soilToFertilizer[
+            seedToSoilMap[
+              seed
+            ]
+          ]
+        ]
+      ]
+    ]
+  ]
+]
+
+fun list<long> parseSeeds() {
+  String line = next()
+  list<long> l =  line.substring(line.indexOf(':') + 1).trim().split(' ').mapToLong { String it -> it.toLong() }
+  next(); next();
+  return l
+}
+
+fun String next() -> reader.readLine()
+
+class RangeMapping {
+  long destRangeStart
+  long sourceRangeStart
+  long sourceRangeEnd
+
+  constructor(this.destRangeStart, this.sourceRangeStart, long rangeLength) {
+    this.sourceRangeEnd = sourceRangeStart + rangeLength - 1
+  }
+
+  fun String toString() -> "$sourceRangeStart to $sourceRangeEnd. DestStart $destRangeStart"
+}
+
+class RangeMap {
+  List mappings = []
+
+  fun void add(RangeMapping mapping) {
+    int i = 0
+    while (i < mappings.size() && mappings.get<RangeMapping>(i).sourceRangeStart < mapping.sourceRangeStart) i++
+    mappings.add(i, mapping)
+  }
+
+  fun long getAt(long seed) {
+    for (RangeMapping mapping in mappings) {
+      if (mapping.sourceRangeStart <= seed && seed <= mapping.sourceRangeEnd) {
+        return mapping.destRangeStart + (seed - mapping.sourceRangeStart)
+      } else if (mapping.sourceRangeStart > seed) return seed
+    }
+    return seed
+  }
+}
