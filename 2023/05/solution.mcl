@@ -13,17 +13,20 @@ private RangeMap humidityToLocation = parseMap()
 
 println("Part 1: value=" + seeds.mapToLong { findLocation(it) }.min())
 
-reader.close()
-
-fun RangeMap parseMap() {
-  RangeMap map = new RangeMap()
-  while (String line = next()) {
-    def (long destRangeStart, long sourceRangeStart, long rangeLength) = line.split(' ').mapToLong { String it -> it.toLong() }
-    map.add(new RangeMapping(destRangeStart, sourceRangeStart, rangeLength))
+// TODO try multi-thread this
+long min = Long.MAX_VALUE
+for (int i in 0..<(seeds.size() / 2)) {
+  long start = seeds[i * 2]
+  long end = start + seeds[i * 2 + 1] - 1
+  println((start..end))
+  for (long j in start..end) {
+    long potential = findLocation(j)
+    min = min > potential ? potential : min
   }
-  next() // skip next useless line
-  return map
 }
+println("Part 2: value=" + min)
+
+reader.close()
 
 fun long findLocation(long seed) -> humidityToLocation[
   temperatureToHumidity[
@@ -46,6 +49,15 @@ fun list<long> parseSeeds() {
   list<long> l =  line.substring(line.indexOf(':') + 1).trim().split(' ').mapToLong { String it -> it.toLong() }
   next(); next();
   return l
+}
+fun RangeMap parseMap() {
+  RangeMap map = new RangeMap()
+  while (String line = next()) {
+    def (long destRangeStart, long sourceRangeStart, long rangeLength) = line.split(' ').mapToLong { String it -> it.toLong() }
+    map.add(new RangeMapping(destRangeStart, sourceRangeStart, rangeLength))
+  }
+  next() // skip next useless line
+  return map
 }
 
 fun String next() -> reader.readLine()
