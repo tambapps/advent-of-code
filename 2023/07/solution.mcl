@@ -1,0 +1,37 @@
+private static final set<int> FOUR_OF_A_KIND_COUNTS = [4, 1]
+private static final set<int> FULL_HOUSE_COUNTS = [3, 2]
+private static final set<int> THREE_OF_A_KIND_COUNTS = [3, 1, 1]
+private static final set<int> TWO_PAIR_COUNTS = [2, 2, 1]
+
+Map handBids = [:]
+
+for (String line in new File('input.txt').readLines()) {
+  def (String hand, String bidStr) = line.split(' ')
+   handBids[hand] = bidStr.toInt()
+}
+
+
+fun int computeStrength(String hand) {
+  Map occMap = [:].withDefault { 0 }
+  for (char c in hand) occMap[c] = occMap[c] as int + 1
+  int size = occMap.size()
+  set<int> counts = occMap.values().toIntSet()
+  return switch(size) {
+    1 -> 7
+    2 -> switch(counts) {
+      FOUR_OF_KIND_COUNTS -> 6
+      FULL_HOUSE_COUNTS -> 5
+      else -> throw new RuntimeException() // shouldn't happen
+    }
+    3 -> switch(counts) {
+      THREE_OF_A_KIND_COUNTS -> 4
+      TWO_PAIR_COUNTS -> 3
+      else -> throw new RuntimeException() // shouldn't happen
+    }
+    4 -> 2
+    else -> 1
+  }
+}
+
+for (String k in handBids.keySet()) println("$k " + computeRank(k))
+//println(handBids)
