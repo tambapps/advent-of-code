@@ -1,0 +1,30 @@
+def (list<long> timeLimits, list<long> distanceRecords) = new File('input.txt').readLines()
+  .map { String line ->
+    line.substring(line.indexOf(':') + 1).trim().split('\\s+').mapToLong { String it -> it.toLong() }
+}
+
+/* part 1 */
+int mul = 1
+for (int i in 0..<timeLimits.length) mul *= computeWays(timeLimits[i], distanceRecords[i])
+println("Part 1: value=$mul")
+
+/* part 2 */
+def (long timeLimit, long distanceRecord) = new File('input.txt').readLines()
+  .map { String line ->
+    line.substring(line.indexOf(':') + 1).replaceAll(' ', '').toLong()
+}
+println("Part 2: value=" + computeWays(timeLimit, distanceRecord))
+
+fun long computeWays(long timeLimit, long distanceRecord) {
+  long start = 1
+  while(start < timeLimit && computeDistance(timeLimit, start) <= distanceRecord) start++
+  long end = timeLimit - 1
+  while(end > start && computeDistance(timeLimit, end) <= distanceRecord) end--
+  return end - start + 1
+}
+
+fun long computeDistance(long timeLimit, long loadingTime) {
+  long remainingTime = timeLimit - loadingTime
+  return loadingTime * remainingTime
+}
+
