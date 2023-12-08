@@ -1,0 +1,44 @@
+private static final String START = "AAA"
+private static final String END = "ZZZ"
+private BufferedReader reader = new BufferedReader(new FileReader('input.txt'))
+private Map directionMap = [:]
+
+String directions = next()
+int nbDirections = directions.length()
+next() // skip empty line
+List ghosts = []
+while (String line = next()) {
+  String node = line.substring(0, line.indexOf(' '))
+  if (node.endsWith('A')) ghosts << node
+  def (String leftNode, String rightNode) = line.substring(line.indexOf('(') + 1, line.indexOf(')'))
+      .split(', ')
+  Map nodeMap = directionMap.computeIfAbsent(node) { [:] }
+  nodeMap[`L`] = leftNode
+  nodeMap[`R`] = rightNode
+}
+
+String current = START
+int dirIndex = 0
+int nbSteps = 0
+while (current != END) {
+  current = move(current, directions[(dirIndex++) % nbDirections])
+  nbSteps++
+}
+println("Part 1 value = $nbSteps")
+
+// TODO part 2 too slow, can't get result
+dirIndex = 0
+nbSteps = 0
+while (ghosts.any { String it -> !it.endsWith('Z') }) {
+  Character direction = directions[(dirIndex++) % nbDirections]
+  for (int i in 0..<ghosts.size()) ghosts[i] = move(ghosts[i] as String, direction)
+  nbSteps++
+}
+println("Part 2 value = $nbSteps")
+
+
+reader.close()
+
+fun String next() -> reader.readLine()
+
+fun String move(String current, Character direction) -> directionMap.get<Map>(current).get(direction)
