@@ -46,7 +46,7 @@ for ((int gameId, List gameHand) in gameHands) {
   }
 }
 
-println("Part 1: value=" + possibleHands.sumInt())
+println("Part 1: value=" + possibleHands.reduce(0) { Integer a, Integer b -> a + b })
 
 // part 2
 int sum = 0
