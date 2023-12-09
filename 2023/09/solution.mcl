@@ -1,0 +1,29 @@
+
+List historyList = new File('input.txt').readLines()
+  .map { String line -> line.split(' ').mapToInt { String it -> it.toInt() } }
+
+int sum = 0
+for (list<int> history in historyList) {
+  List steps = [history]
+
+  // generating sequence of differences
+  list<int> current = history.toList()
+  while (current.any { it != 0 }) {
+    list<int> next = []
+    for (int i in 0..<(current.size() - 1)) {
+      next.add(current[i + 1] - current[i])
+    }
+    steps.add(next)
+    current = next
+  }
+
+  // extrapolating
+  for (list<int> step in steps) step.add(0)
+  for (int i in (steps.size() - 1)..1) {
+    list<int> previousStep = steps[i]
+    list<int> step = steps[i - 1]
+    step.last = previousStep.last + step[step.size() - 2]
+  }
+  sum+= history.last
+}
+println("Part 1: $sum")
