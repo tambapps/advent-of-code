@@ -1,8 +1,8 @@
-
 List historyList = new File('input.txt').readLines()
   .map { String line -> line.split(' ').mapToInt { String it -> it.toInt() } }
 
-int sum = 0
+int sumLast = 0
+int sumFirst = 0
 for (list<int> history in historyList) {
   List steps = [history]
 
@@ -17,13 +17,23 @@ for (list<int> history in historyList) {
     current = next
   }
 
-  // extrapolating
+  // extrapolating next
   for (list<int> step in steps) step.add(0)
   for (int i in (steps.size() - 1)..1) {
     list<int> previousStep = steps[i]
     list<int> step = steps[i - 1]
     step.last = previousStep.last + step[step.size() - 2]
   }
-  sum+= history.last
+
+  // extrapolating previous
+  for (list<int> step in steps) step.add(0, 0)
+  for (int i in (steps.size() - 1)..1) {
+    list<int> previousStep = steps[i]
+    list<int> step = steps[i - 1]
+    step.first = step[1] - previousStep.first
+  }
+  sumLast+= history.last
+  sumFirst+= history.first
 }
-println("Part 1: $sum")
+println("Part 1: $sumLast")
+println("Part 2: $sumFirst")

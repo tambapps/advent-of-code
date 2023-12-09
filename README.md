@@ -48,6 +48,7 @@ v run solution.v
 | 6   | :white_check_mark: | :white_check_mark: |
 | 7   | :white_check_mark: | :white_check_mark: |
 | 8   | :white_check_mark: | :x:                |
+| 9   | :white_check_mark: | :white_check_mark: |
 
 </details>
 
