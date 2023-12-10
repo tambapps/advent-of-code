@@ -19,26 +19,45 @@ while (String line = next()) {
 
 String current = START
 int dirIndex = 0
-int nbSteps = 0
+long nbSteps = 0
 while (current != END) {
   current = move(current, directions[(dirIndex++) % nbDirections])
   nbSteps++
 }
 println("Part 1 value = $nbSteps")
 
-// TODO part 2 too slow, can't get result
-dirIndex = 0
-nbSteps = 0
-while (ghosts.any { String it -> !it.endsWith('Z') }) {
-  Character direction = directions[(dirIndex++) % nbDirections]
-  for (int i in 0..<ghosts.size()) ghosts[i] = move(ghosts[i] as String, direction)
-  nbSteps++
+list<long> ghostNbSteps = []
+for (String ghost in ghosts) {
+  dirIndex = 0
+  nbSteps = 0l
+  current = ghost
+  while (!current.endsWith('Z')) {
+    current = move(current, directions.getAt<Character>((dirIndex++) % nbDirections))
+    nbSteps++
+  }
+  ghostNbSteps << nbSteps
 }
-println("Part 2 value = $nbSteps")
-
+// TODO bug when it is primitive int
+println("Part 2 value " + ghostNbSteps.reduce { Long a1, Long a2 -> lcm(a1 as long, a2 as long) })
 
 reader.close()
 
 fun String next() -> reader.readLine()
 
 fun String move(String current, Character direction) -> directionMap.get<Map>(current).get(direction)
+
+// thanks Baeldung
+fun long lcm(long number1, long number2) {
+    if (number1 == 0 || number2 == 0) {
+        return 0
+    }
+    long absNumber1 = Math.abs(number1)
+    long absNumber2 = Math.abs(number2)
+    long absHigherNumber = Math.max(absNumber1, absNumber2)
+    long absLowerNumber = Math.min(absNumber1, absNumber2)
+    long lcm = absHigherNumber
+    while ((lcm % absLowerNumber) != 0) {
+        lcm += absHigherNumber
+    }
+    return lcm
+}
