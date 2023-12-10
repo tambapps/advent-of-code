@@ -68,8 +68,7 @@ private fun Integer hasAdjacentGearPos(int x, int y) {
 
 private fun bool isSymbol(int x, int y) {
   Character c = this?[x, y]
-  // TODO bug with not operator parsing without parenthesis it doesn't work. write test for that once it is fixed
-  return c != null && (!c.isDigit()) && c != `.`
+  return c != null && !c.isDigit() && c != `.`
 }
 
 private fun char getAt(int i, int j) -> grid[getIndex(i, j)]
