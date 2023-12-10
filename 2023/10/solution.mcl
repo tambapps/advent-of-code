@@ -1,0 +1,89 @@
+private list<char> grid = []
+private int n;
+private Map nodes = [:]
+private Node start
+
+parse()
+Map dist = computeDistances()
+println("Part 1: " + dist.values().max())
+
+fun Map computeDistances() {
+  List distMaps = []
+  for (Node startNode in start.adj) {
+    Map distances = [(start): 0]
+    int i = 1
+    Node current = startNode
+    while (current != null) {
+      distances[current] = i++
+      current = current.adj.find { !distances.containsKey(it) }
+    }
+    distMaps << distances
+  }
+  def (Map dist1Map, Map dist2Map) = distMaps
+  Map dist = [:]
+  for (Node node in dist1Map.keySet()) dist[node] = min(dist1Map[node] as int, dist2Map[node] as int)
+  return dist
+}
+
+fun int min(int a, int b) -> a <= b ? a : b
+fun int abs(int x) -> x >= 0 ? x : - x
+fun int dist2(Node n1, Node n2) -> abs(n2.x - n1.x) + abs(n2.y - n1.y)
+
+fun void parse() {
+  List lines = new File('input.txt').readLines()
+  n = lines.get<String>(0).length()
+  int height = lines.length
+  for (String line in lines) {
+    grid.addAll(line)
+  }
+  for (int y in 0..<height)
+    for (int x in 0..<n)
+      if (this[x, y] != `.`)
+        addNode(x, y)
+}
+
+fun void addNode(int x, int y) {
+  Node node = getNode(x, y)
+  switch (this[node]) {
+    `|` -> { addTop(node); addBottom(node) }
+    `-` -> { addLeft(node); addRight(node) }
+    `L` -> { addTop(node); addRight(node) }
+    `J` -> { addTop(node); addLeft(node) }
+    `7` -> { addBottom(node); addLeft(node) }
+    `F` -> { addBottom(node); addRight(node) }
+    `F` -> { addBottom(node); addRight(node) }
+    `S` -> {
+      addTop(node); addBottom(node);
+      addLeft(node); addRight(node);
+      start = node
+    }
+  }
+}
+fun void addTop(Node node) -> if (isAdjacent(this[node.x, node.y - 1], `|`, `7`, `F`)) node.addAdj(getNode(x: node.x, y: node.y - 1))
+fun void addBottom(Node node) -> if (isAdjacent(this[node.x, node.y + 1], `|`, `J`, `L`)) node.addAdj(getNode(x: node.x, y: node.y + 1))
+fun void addRight(Node node) -> if (isAdjacent(this[node.x + 1, node.y], `-`, `J`, `7`)) node.addAdj(getNode(x: node.x + 1, y: node.y))
+fun void addLeft(Node node) -> if (isAdjacent(this[node.x - 1, node.y], `-`, `L`, `F`)) node.addAdj(getNode(x: node.x - 1, y: node.y))
+
+fun bool isAdjacent(char c, char adj1, char adj2, char adj3) -> c == `S` || c == adj1 || c == adj2 || c == adj3
+
+fun Node getNode(int x, int y) -> nodes.computeIfAbsent(getIndex(x, y)) { new Node(x: x, y: y) }
+
+class Node {
+  int x
+  int y
+  List adj = []
+  constructor(this.x, this.y)
+
+  fun void addAdj(Node node) {
+    if (!adj.contains(node)) adj.add(node)
+  }
+
+  fun String toString() -> "Node(x=$x, y=$y)"
+}
+
+fun char getAt(Node node) -> getAt(node.x, node.y)
+fun char getAt(int x, int y) {
+  int i = getIndex(x, y)
+  return i >= 0 && i < grid.length ? grid[i] : `.` // fallback for when checking out of bounds
+}
+private fun int getIndex(int i, int j) ->  j * n + i
