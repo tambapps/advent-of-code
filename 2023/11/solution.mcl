@@ -1,0 +1,122 @@
+static final char EMPTY = `.`
+static final char GALAXY = `#`
+
+private list<char> grid = []
+private List lines = new File('input.txt').readLines()
+private int width = lines.get<String>(0).length()
+private int height = lines.length
+
+for (String line in lines) {
+  grid.addAll(line)
+}
+for (int y in 0..<height) {
+  println(grid[(y * width)..<((y +1) * width)])
+}
+// expanded rows
+expandRows()
+private fun void expandRows() {
+  list<char> grid2 = []
+  for (int y in 0..<height) {
+    list<char> line = grid[(y * width)..<((y +1) * width)]
+    if (line.all { it == EMPTY }) {
+      grid2.addAll(line)
+    }
+    grid2.addAll(line)
+  }
+  grid = grid2
+  height = grid.size() / width / 1 // TODO remove this /1 hack
+}
+println("After height=$height")
+
+for (int y in 0..<height) {
+  println(grid[(y * width)..<((y +1) * width)])
+}
+println('rrrrrr')
+// expanded columns
+expandColumns()
+private fun void expandColumns() {
+  list<int> indexes = []
+  List expandableColumns = []
+  for (int x in 0..<width) {
+    list<char> column = extractColumn(grid, height, width, x)
+    if (column.all { it == EMPTY }) {
+      indexes << x
+      expandableColumns << column
+    }
+  }
+  list<char> grid2 = []
+  grid2.addAll(grid)
+  int width2 = width
+  for (int i in (expandableColumns.size() - 1)..0) { // going in reverse order to avoid modifying what's before
+    insertColumn(grid2, width2, expandableColumns[i] as list<char>, indexes[i])
+    width2++
+  }
+  grid = grid2
+  width = width2
+}
+
+
+for (int y in 0..<height) {
+  println(grid[(y * width)..<((y +1) * width)])
+}
+
+List galaxies = []
+for (int y in 0..<height) {
+  for (int x in 0..<width) {
+    if (this[x, y] == GALAXY) galaxies.add(new Position(x, y))
+  }
+}
+
+List pairs = []
+for (int i in 0..<galaxies.size()) {
+  for (int j in 0..<i) {
+    pairs << ([galaxies[i], galaxies[j]] as List)
+  }
+}
+int sum = 0
+for (List pair in pairs) {
+  def (Position g1, Position g2) = pair
+  sum += distance(g1, g2)
+  println("Distance $g1 to $g2 = " + distance(g1, g2))
+}
+println(sum)
+
+fun int distance(Position start, Position end) {
+  Position p = new Position(x: start.x, y: start.y)
+  int d = 0
+  while (p != end) { // TODO increment doesn't work yet with dot operator
+    if (p.x < end.x) p.x = p.x + 1
+    else if (p.x > end.x) p.x = p.x - 1
+    else if (p.y < end.y) p.y = p.y + 1
+    else if (p.y > end.y) p.y = p.y - 1
+    d++
+  }
+  return d
+}
+
+class Position {
+  int x
+  int y
+  constructor(this.x, this.y)
+  // TODO autogenerate toString and equalsAndHashcode
+  fun String toString() -> "(x=$x, y=$y)"
+
+  fun bool equals(Object o) {
+    Position p = o as Position
+    return p.x == x && p.y == y
+  }
+}
+
+fun void insertColumn(list<char> grid, int width, list<char> column, int x) {
+  for (int i in (column.size() - 1)..0) {
+    grid.add(x + i * width, column[i])
+  }
+}
+fun list<char> extractColumn(list<char> grid, int height, int width, int x) {
+  list<char> column = []
+  for (int i in 0..<height) column << grid[x + i * width]
+  return column
+}
+
+fun char getAt(int x, int y) -> grid[getIndex(x, y)]
+fun int getIndex(int i, int j) ->  j * width + i
