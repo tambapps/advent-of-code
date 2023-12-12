@@ -1,0 +1,34 @@
+static final char OPERATIONAL = `.`
+static final char DAMAGED = `#`
+
+int sum = 0
+for (String line in new File('input.txt').readLines()) {
+  def (String arrangementStr, String expectedStr) = line.split(' ')
+  List arrangement = toArrangement(arrangementStr)
+  list<int> expected = expectedStr.split(',').mapToInt { String it -> it.toInt() }
+  for (List combination in arrangement.combinations()) {
+    if (satisfies(combination, expected)) sum++
+  }
+}
+
+println("Part 1: $sum")
+
+fun bool satisfies(List combination, list<int> expected) {
+  List parts = combination.join()
+    .split('\\.+', -1)
+    .findAll { String it -> !it.isEmpty() }
+  if (parts.size() != expected.size()) return false
+  for (int i in 0..<expected.size()) {
+    if (parts.get<String>(i).length() != expected[i]) return false
+  }
+  return true
+}
+
+// list of list, for combination generation
+fun List toArrangement(String str) {
+  List arr = []
+  for (char c in str) {
+    arr << ((c == `?` ? [OPERATIONAL, DAMAGED] : [c]) as List)
+  }
+  return arr
+}
