@@ -11,6 +11,7 @@ static final int TWO_PAIR = 3
 static final int ONE_PAIR = 2
 static final int HIGH_CARD = 1
 
+// TODO use Sortable and Sortable.Exclude to avoid having to pass Comparator
 class Hand {
   String value
   list<int> cardValues
@@ -23,10 +24,10 @@ List hands = []
 List hands2 = []
 for (String line in new File('input.txt').readLines()) {
   def (String value, String bidStr) = line.split(' ')
-  list<int> cardValues = value.toCharList().mapToInt { CARD_ORDER[it] }
+  list<int> cardValues = value.toList().mapToInt { CARD_ORDER[it] }
   hands << new Hand(value, strength(value), cardValues, bidStr.toInt())
 
-  list<int> cardValues2 = value.toCharList().mapToInt { it == `J` ? 0 : CARD_ORDER[it] } // J has lowest priority
+  list<int> cardValues2 = value.toList().mapToInt { it == `J` ? 0 : CARD_ORDER[it] } // J has lowest priority
   hands2 << new Hand(value, strength2(value), cardValues2, bidStr.toInt())
 }
 println("Part 1: value=" + totalWinnings(hands))
