@@ -1,0 +1,85 @@
+
+private int hSum0 = 0
+private int vSum0 = 0
+private int hSum1 = 0
+private int vSum1 = 0
+
+// parsing and processing
+Array2d array = null
+for (String line in new File('input.txt').readLines()) {
+  if (line.isEmpty()) {
+    process(array)
+    array = null
+  } else if (array == null) {
+    array = new Array2d(line.length())
+    array << line
+  }
+  else array << line
+}
+process(array) // process last
+
+println("Part 1: " + (hSum0 + 100 * vSum0))
+println("Part 2: " + (hSum1 + 100 * vSum1))
+
+fun void process(Array2d array) {
+  int middle = array.width / 2
+  int i = 0
+  // searching X
+  while (middle + i < array.width || middle - i > 0) {
+    if (middle + i < array.width) checkXSymmetricDiffs(array, middle + i)
+    if (i != 0 && middle - i > 0) checkXSymmetricDiffs(array, middle - i)
+    i++
+  }
+  // searching Y
+  middle = array.height / 2
+  i = 0
+  while (middle + i < array.height || middle - i > 0) {
+    if (middle + i < array.height) checkYSymmetricDiffs(array, middle + i)
+    if (i != 0 && middle - i > 0) checkYSymmetricDiffs(array, middle - i)
+    i++
+  }
+}
+
+fun void checkXSymmetricDiffs(Array2d array, int middleX) {
+  int size = Math.min(array.width - middleX, middleX)
+  int diffCount = 0
+  for (int y in 0..<array.height) {
+    for (int xOffset in 0..<size) {
+      if (array[middleX - xOffset - 1, y] != array[middleX + xOffset, y]) diffCount++
+    }
+  }
+  switch(diffCount) {
+    0 -> hSum0+= middleX
+    1 -> hSum1+= middleX
+  }
+}
+
+fun void checkYSymmetricDiffs(Array2d array, int middleY) {
+  int size = Math.min(array.height - middleY, middleY)
+  int diffCount = 0
+  for (int x in 0..<array.width) {
+    for (int yOffset in 0..<size) {
+      if (array[x, middleY - yOffset - 1] != array[x, middleY + yOffset]) diffCount++
+    }
+  }
+  switch(diffCount) {
+    0 -> vSum0+= middleY
+    1 -> vSum1+= middleY
+  }
+}
+
+class Array2d {
+
+  list<char> list = []
+  int width
+  int height
+
+  constructor(this.width)
+
+  fun void leftShift(String line) {
+    list << line
+    height++
+  }
+
+  fun char getAt(int x, int y) -> list[y * width + x]
+}
