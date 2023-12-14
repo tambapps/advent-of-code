@@ -11,26 +11,25 @@ for (String line in new File('input.txt').readLines()) {
   height++
 }
 
-
 move(0, -1)
 println("Part 1: " + computeLoad())
 
-for (long i in 1l..<1000000000l) {
-  long percentage = 100l * i / 1000000000l
-  print("\r$percentage")
-  switch (i % 4l) {
-    0l -> move(0, -1)
-    1l -> move(-1, 0)
-    2l -> move(0, 1)
-    3l -> move(1, 0)
+int cycleSize = 1
+for (int i in 1..<1000000000) {
+  switch (i % 4) {
+    0 -> move(0, -1)
+    1 -> move(-1, 0)
+    2 -> move(0, 1)
+    3 -> move(1, 0)
   }
 }
+println(this)
 println("Part 2: " + computeLoad())
 
 fun void move(int dirX, int dirY) {
-  for (int y in 0..<height) {
-    for (int x in 0..<width) {
-      if (this[x, y] == ROUND) moveRock(x, y, 0, -1)
+  for (int y in (dirY < 0 ? 0..<height : (height - 1)..0)) {
+    for (int x in (dirX < 0 ? 0..<width : (width - 1)..0)) {
+      if (this[x, y] == ROUND) moveRock(x, y, dirX, dirY)
     }
   }
 }
@@ -38,10 +37,11 @@ fun void move(int dirX, int dirY) {
 fun void moveRock(int startX, int startY, int dirX, int dirY) {
   int x = startX
   int y = startY
-  // TODO priority problem
+  // TODO marcel == priority problem without parenthesis
   while ((((dirY == -1) && y > 0 || (dirY == 1) && y < height - 1)
       || ((dirX == -1) && x > 0 || (dirX == 1) && x < width - 1))
     && this[x + dirX, y + dirY] == EMPTY) {
+    x+= dirX
     y+= dirY
   }
   this[startX, startY] = EMPTY
@@ -60,3 +60,12 @@ fun int computeLoad() {
 
 fun char getAt(int x, int y) -> list[y * width + x]
 fun char putAt(int x, int y, char c) -> list[y * width + x] = c
+
+fun String toString() {
+  StringBuilder builder = new StringBuilder()
+  for (int i in 0..<height) {
+    builder.append(list[(i * height)..<((i + 1) * height)])
+      .append('\n')
+  }
+  return builder.toString()
+}
