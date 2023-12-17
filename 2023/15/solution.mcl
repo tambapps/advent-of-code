@@ -1,0 +1,18 @@
+
+int sum = 0
+for (String input in new File('input.txt').readText().split(',')) {
+  sum += hash(input)
+}
+
+println("Part 1: $sum")
+
+fun int hash(String input) {
+  int h = 0
+  for (char c in input) {
+    h += c as int
+    h *= 17
+    // TODO handle %= operator
+    h = h % 256
+  }
+  return h
+}
