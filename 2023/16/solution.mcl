@@ -1,63 +1,88 @@
+import java.util.concurrent.*
+
 static final char VERTICAL = `|`
 static final char HORIZONTAL = `-`
 static final char DIAG_LR = `\\`
 static final char DIAG_RL = `/`
 
-private list<char> list = []
-private int width
-private int height
+// TODO make script class/trait/interface to have utilities to wait, and submit runnables
+internal ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()
+internal List futures = []
+internal Map sumMap = new ConcurrentHashMap()
+internal list<char> list = []
+internal int width
+internal int height
 
 for (String line in new File('input.txt').readLines()) {
   if (width == 0) width = line.length()
   list << line
   height++
 }
-
-private Set beamHistory = []
 // x=-1 because we start by moving in our implementation
-private List beams = [new Beam(x: -1, y: 0, direction: Beam.RIGHT)]
+println("Part 1: " + simulate(new Beam(x: -1, y: 0, direction: Beam.RIGHT)))
 
-while (!beams.isEmpty()) {
-  for (int i = 0; i < beams.size(); i++) {
-    Beam b = beams[i]
-    b.move()
-    if ((b.x < 0 || b.x >= width || b.y < 0 || b.y >= height) // out of bounds
-      || !(beamHistory << b.copy())) {
-      beams.remove(i--)
-      continue
-    }
-    switch(this[b]) {
-      VERTICAL, HORIZONTAL -> {
-        if ((b.direction == Beam.LEFT || b.direction == Beam.RIGHT) && this[b] == VERTICAL
-          || (b.direction == Beam.UP || b.direction == Beam.DOWN) && this[b] == HORIZONTAL) {
-          Beam b2 = b.copy()
-          b.rotateClockwise()
-          b2.rotateAntiClockwise()
-          if (beamHistory << b2.copy()) {
-            beams << b2
-          }
-        }
-      }
-      DIAG_LR -> if (b.direction == Beam.LEFT || b.direction == Beam.RIGHT) b.rotateClockwise() else b.rotateAntiClockwise()
-      DIAG_RL -> if (b.direction == Beam.LEFT || b.direction == Beam.RIGHT) b.rotateAntiClockwise() else b.rotateClockwise()
-    }
-  }
+// part 2
+// top and bottom row
+for (int i in 0..<width) {
+  submit(new Beam(x: i, y: -1, direction: Beam.DOWN))
+  submit(new Beam(x: i, y: height, direction: Beam.UP))
+}
+// left and right column
+for (int i in 0..<height) {
+  submit(new Beam(x: -1, y: i, direction: Beam.RIGHT))
+  submit(new Beam(x: width, y: i, direction: Beam.LEFT))
+}
+int i = 0
+for (Future f in futures) {
+  print("\rComputed ${i++} out of ${futures.size()} configurations")
+  f.get()
 }
 
-int sum = 0
-for (int y in 0..<height) {
-  for (int x in 0..<width) {
-    if (beamHistory.any { Beam b -> b.x == x && b.y == y }) {
-      sum++
-      this[x, y] = `#` // TODO remove this
+println("\nPart 2: " + sumMap.values().max())
+executor.shutdown()
+
+fun void submit(Beam start) -> futures << executor.submit { sumMap.put(start, simulate(start)) }
+
+fun int simulate(Beam start) {
+  Set beamHistory = []
+  List beams = [start.copy()]
+
+  while (!beams.isEmpty()) {
+    for (int i = 0; i < beams.size(); i++) {
+      Beam b = beams[i]
+      b.move()
+      if ((b.x < 0 || b.x >= width || b.y < 0 || b.y >= height) // out of bounds
+        || !(beamHistory << b.copy())) {
+        beams.remove(i--)
+        continue
+      }
+      switch(this[b]) {
+        VERTICAL, HORIZONTAL -> {
+          if ((b.direction == Beam.LEFT || b.direction == Beam.RIGHT) && this[b] == VERTICAL
+            || (b.direction == Beam.UP || b.direction == Beam.DOWN) && this[b] == HORIZONTAL) {
+            Beam b2 = b.copy()
+            b.rotateClockwise()
+            b2.rotateAntiClockwise()
+            if (beamHistory << b2.copy()) {
+              beams << b2
+            }
+          }
+        }
+        DIAG_LR -> if (b.direction == Beam.LEFT || b.direction == Beam.RIGHT) b.rotateClockwise() else b.rotateAntiClockwise()
+        DIAG_RL -> if (b.direction == Beam.LEFT || b.direction == Beam.RIGHT) b.rotateAntiClockwise() else b.rotateClockwise()
+      }
     }
   }
+  int sum = 0
+  for (int y in 0..<height) {
+    for (int x in 0..<width) {
+      if (beamHistory.any { Beam b -> b.x == x && b.y == y }) sum++
+    }
+  }
+  return sum
 }
 
 fun char putAt(int x, int y, char c) -> list[y * width + x] = c
-
-//println(this)
-println("Part 1: $sum")
 
 class Beam {
 
