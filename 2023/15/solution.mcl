@@ -1,10 +1,27 @@
+String[] sequences = new File('input.txt').readText().split(',')
+println("Part 1: " + sequences.mapToInt { String it -> hash(it) }.sum())
 
-int sum = 0
-for (String input in new File('input.txt').readText().split(',')) {
-  sum += hash(input)
+Map boxes = [:].withDefault(true) { [] as List }
+for (String input in sequences) {
+  if (input.endsWith('-')) {
+    String label = input.substring(0, input.length() - 1)
+    List lenses = boxes[hash(label)]
+    lenses.removeIf { Lens b -> b.label == label }
+  } else {
+    def (String label, String nStr) = input.split('=')
+    int n = nStr.toInt()
+    List lenses = boxes[hash(label)]
+    Lens b = lenses.find { Lens it -> it.label == label }
+    if (b != null) b.n = n
+    else lenses.add(new Lens(label, n))
+  }
 }
-
-println("Part 1: $sum")
+int sum = 0
+for ((int boxSlot, List lenses) in boxes) {
+  if (lenses.isEmpty()) continue
+  for (int i in 0..<lenses.size()) sum += (boxSlot + 1) * (i + 1) * lenses.get<Lens>(i).n
+}
+println("Part 2: $sum")
 
 fun int hash(String input) {
   int h = 0
@@ -15,4 +32,10 @@ fun int hash(String input) {
     h = h % 256
   }
   return h
+}
+
+class Lens {
+  String label
+  int n
+  constructor(this.label, this.n)
 }
