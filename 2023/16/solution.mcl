@@ -112,11 +112,10 @@ class Beam {
 
   fun void move() {
     switch(direction) {
-      // TODO marcel implement field increment
-      LEFT -> x = x - 1
-      RIGHT -> x = x + 1
-      UP -> y = y - 1
-      DOWN -> y = y + 1
+      LEFT -> x--
+      RIGHT -> x++
+      UP -> y--
+      DOWN -> y++
     }
   }
 

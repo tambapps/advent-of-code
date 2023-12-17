@@ -28,8 +28,7 @@ fun int hash(String input) {
   for (char c in input) {
     h += c as int
     h *= 17
-    // TODO handle %= operator
-    h = h % 256
+    h %= 256
   }
   return h
 }
