@@ -37,9 +37,8 @@ fun void move(int dirX, int dirY) {
 fun void moveRock(int startX, int startY, int dirX, int dirY) {
   int x = startX
   int y = startY
-  // TODO marcel == priority problem without parenthesis
-  while ((((dirY == -1) && y > 0 || (dirY == 1) && y < height - 1)
-      || ((dirX == -1) && x > 0 || (dirX == 1) && x < width - 1))
+  while (((dirY == -1 && y > 0 || dirY == 1 && y < height - 1)
+      || (dirX == -1 && x > 0 || dirX == 1 && x < width - 1))
     && this[x + dirX, y + dirY] == EMPTY) {
     x+= dirX
     y+= dirY
