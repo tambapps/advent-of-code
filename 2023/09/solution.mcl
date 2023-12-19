@@ -30,10 +30,10 @@ for (list<int> history in historyList) {
   for (int i in (steps.size() - 1)..1) {
     list<int> previousStep = steps[i]
     list<int> step = steps[i - 1]
-    step.first = step[1] - previousStep.first
+    step.first = step[1] - previousStep[0]
   }
-  sumLast+= history.last
-  sumFirst+= history.first
+  sumLast+= history[history.size() - 1]
+  sumFirst+= history[0]
 }
 println("Part 1: $sumLast")
 println("Part 2: $sumFirst")
