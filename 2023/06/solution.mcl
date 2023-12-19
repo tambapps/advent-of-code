@@ -5,7 +5,7 @@ def (list<long> timeLimits, list<long> distanceRecords) = new File('input.txt').
 
 /* part 1 */
 int mul = 1
-for (int i in 0..<timeLimits.length) mul *= computeWays(timeLimits[i], distanceRecords[i])
+for (int i in 0..<timeLimits.size()) mul *= computeWays(timeLimits[i], distanceRecords[i])
 println("Part 1: value=$mul")
 
 /* part 2 */

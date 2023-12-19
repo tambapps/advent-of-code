@@ -44,7 +44,7 @@ fun int totalWinnings(List hands) {
     return 0
   }
   int sum = 0
-  for (int i in 0..<hands.length) sum += (i + 1) * hands.get<Hand>(i).bid
+  for (int i in 0..<hands.size()) sum += (i + 1) * hands.get<Hand>(i).bid
   return sum
 }
 

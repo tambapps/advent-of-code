@@ -19,7 +19,7 @@ Map gameHands = [:]
 // parsing
 for (String line in new File('input.txt').readLines()) {
   def (String part1, String part2) = line.split(":")
-  int gameId = part1.substring(part1.lastIndexOf(" ") + 1, part1.length).toInt()
+  int gameId = part1.substring(part1.lastIndexOf(" ") + 1, part1.length()).toInt()
   List hands = []
   for (String handStr in part2.split(";")) {
     Hand hand = new Hand()

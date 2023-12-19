@@ -32,7 +32,7 @@ fun int dist2(Node n1, Node n2) -> abs(n2.x - n1.x) + abs(n2.y - n1.y)
 fun void parse() {
   List lines = new File('input.txt').readLines()
   n = lines.get<String>(0).length()
-  int height = lines.length
+  int height = lines.size()
   for (String line in lines) {
     grid.addAll(line)
   }
@@ -84,6 +84,6 @@ class Node {
 fun char getAt(Node node) -> getAt(node.x, node.y)
 fun char getAt(int x, int y) {
   int i = getIndex(x, y)
-  return i >= 0 && i < grid.length ? grid[i] : `.` // fallback for when checking out of bounds
+  return i >= 0 && i < grid.size() ? grid[i] : `.` // fallback for when checking out of bounds
 }
 private fun int getIndex(int i, int j) ->  j * n + i

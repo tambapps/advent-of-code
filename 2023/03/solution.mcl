@@ -39,7 +39,7 @@ for (int y; y < height; y++) {
 println("Part 1: value=$sum")
 sum = 0 // part 2
 for (List l in gearValuesMap.values()) {
-  if (l.length == 2) {
+  if (l.size() == 2) {
     sum += (l.first as int) * (l.last as int)
   }
 }
@@ -75,7 +75,7 @@ private fun char getAt(int i, int j) -> grid[getIndex(i, j)]
 
 private fun Character getAtSafe(int i, int j) {
   int index = getIndex(i, j);
-  return index < grid.length && index >= 0 ? grid[index] : null
+  return index < grid.size() && index >= 0 ? grid[index] : null
 }
 
 private fun int getIndex(int i, int j) ->  j * n + i

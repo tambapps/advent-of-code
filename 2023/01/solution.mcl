@@ -20,8 +20,8 @@ for (String line in new File('input.txt').readLines()) {
   sum1 += toNumber(first1, last1)
 
   // part 2
-  char first2 = findCalibrationDigits(line, 0..<line.length)
-  char last2 = findCalibrationDigits(line, (line.length - 1)..0)
+  char first2 = findCalibrationDigits(line, 0..<line.length())
+  char last2 = findCalibrationDigits(line, (line.length() - 1)..0)
   sum2 += toNumber(first2, last2)
 }
 println("Part 1: The sum of all of the calibration values is $sum1")
@@ -32,7 +32,7 @@ fun int toNumber(char firstDigit, char lastDigit) -> (firstDigit - `0`) * 10 + l
 
 fun char findCalibrationDigits(String line, IntRange range) {
   for (int i in range) {
-    String wordDigit = MAPPINGS.keySet().find { String it -> line?[i..<(i + it.length)] == it }
+    String wordDigit = MAPPINGS.keySet().find { String it -> line?[i..<(i + it.length())] == it }
     if (wordDigit != null) return MAPPINGS[wordDigit]
   }
   throw new RuntimeException()
