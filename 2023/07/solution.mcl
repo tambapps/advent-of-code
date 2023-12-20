@@ -11,12 +11,14 @@ static final int TWO_PAIR = 3
 static final int ONE_PAIR = 2
 static final int HIGH_CARD = 1
 
-// TODO use Sortable and Sortable.Exclude to avoid having to pass Comparator
+@comparable
 class Hand {
-  String value
-  list<int> cardValues
-  int bid
   int strength
+  list<int> cardValues
+  @comparable.Exclude
+  String value
+  @comparable.Exclude
+  int bid
   constructor(this.value, this.strength, this.cardValues, this.bid)
 }
 
@@ -34,15 +36,7 @@ println("Part 1: value=" + totalWinnings(hands))
 println("Part 2: value=" + totalWinnings(hands2))
 
 fun int totalWinnings(List hands) {
-  hands.sort { Hand h1, Hand h2 ->
-    int c = h1.strength - h2.strength
-    if (c != 0) return c
-    for (int i in 0..<5) {
-      c = h1.cardValues[i] - h2.cardValues[i]
-      if (c != 0) return c
-    }
-    return 0
-  }
+  hands.sort()
   int sum = 0
   for (int i in 0..<hands.size()) sum += (i + 1) * hands.get<Hand>(i).bid
   return sum

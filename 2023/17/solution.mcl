@@ -1,0 +1,20 @@
+
+static final char VERTICAL = `|`
+static final char HORIZONTAL = `-`
+static final char DIAG_LR = `\\`
+static final char DIAG_RL = `/`
+
+internal list<int> list = []
+internal int width
+internal int height
+
+for (String line in new File('input.txt').readLines()) {
+  if (width == 0) width = line.length()
+  for (char c in line) list << c.toInt()
+  height++
+}
+println(list)
+
+// TODO graph? the cheapiest way to go from the top left to bottom right
+
+fun int getAt(int x, int y) -> list[y * width + x]

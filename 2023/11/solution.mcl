@@ -4,19 +4,11 @@ private Map grid
 private long width
 private long height
 
+@data
 class Position {
   long x
   long y
   constructor(this.x, this.y)
-  // TODO autogenerate toString and equalsAndHashcode
-  fun String toString() -> "(x=$x, y=$y)"
-
-  fun int hashCode() -> Long.hashCode(x) * 31 + Long.hashCode(y)
-
-  fun bool equals(Object o) {
-    Position p = o as Position
-    return p.x == x && p.y == y
-  }
 }
 
 println("Part 1: " + execute(1l))

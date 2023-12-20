@@ -2,9 +2,6 @@ class Hand {
   int blue
   int red
   int green
-
-  // TODO implement macro function or something to generate toString()
-  fun String toString() -> "Hand(red=$red, green=$green, blue=$blue)"
 }
 
 static final String RED = "red"
