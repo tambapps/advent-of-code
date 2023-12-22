@@ -1,6 +1,5 @@
 private int i = 0
-// TODO make try-with-resources work
-private BufferedReader reader = new BufferedReader(new FileReader('input.txt'))
+private BufferedReader reader = Files.reader('input.txt')
 
 private list<long> seeds = parseSeeds()
 private RangeMap seedToSoilMap = parseMap()
@@ -13,7 +12,6 @@ private RangeMap humidityToLocation = parseMap()
 
 println("Part 1: value=" + seeds.mapToLong { findLocation(it) }.min())
 
-// TODO try multi-thread this
 long min = Long.MAX_VALUE
 for (int i in 0..<(seeds.size() / 2)) {
   long start = seeds[i * 2]

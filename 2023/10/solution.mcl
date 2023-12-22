@@ -30,7 +30,7 @@ fun int abs(int x) -> x >= 0 ? x : - x
 fun int dist2(Node n1, Node n2) -> abs(n2.x - n1.x) + abs(n2.y - n1.y)
 
 fun void parse() {
-  List lines = new File('input.txt').readLines()
+  List lines = Files.readLines('input.txt')
   n = lines.get<String>(0).length()
   int height = lines.size()
   for (String line in lines) {

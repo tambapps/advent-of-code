@@ -5,7 +5,7 @@ private int n;
 private int height;
 
 // fill grid
-for (String line in new File('input.txt').readLines()) {
+for (String line in Files.readLines('input.txt')) {
   if (n == 0) n = line.length()
   grid.addAll(line)
   height++

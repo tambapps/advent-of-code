@@ -12,7 +12,7 @@ internal list<char> list = []
 internal int width
 internal int height
 
-for (String line in new File('input.txt').readLines()) {
+for (String line in Files.readLines('input.txt')) {
   if (width == 0) width = line.length()
   list << line
   height++

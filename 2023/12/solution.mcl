@@ -2,7 +2,7 @@ static final char OPERATIONAL = `.`
 static final char DAMAGED = `#`
 
 int sum = 0
-for (String line in new File('input.txt').readLines()) {
+for (String line in Files.readLines('input.txt')) {
   def (String arrangementStr, String expectedStr) = line.split(' ')
   List arrangement = toArrangement(arrangementStr)
   list<int> expected = expectedStr.split(',').mapToInt { String it -> it.toInt() }

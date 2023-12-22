@@ -1,6 +1,6 @@
 private static final String START = "AAA"
 private static final String END = "ZZZ"
-private BufferedReader reader = new BufferedReader(new FileReader('input.txt'))
+private BufferedReader reader = Files.reader('input.txt')
 private Map directionMap = [:]
 
 String directions = next()
@@ -24,7 +24,7 @@ while (current != END) {
   current = move(current, directions[(dirIndex++) % nbDirections])
   nbSteps++
 }
-println("Part 1 value = $nbSteps")
+println("Part 1: $nbSteps")
 
 list<long> ghostNbSteps = []
 for (String ghost in ghosts) {
@@ -38,7 +38,7 @@ for (String ghost in ghosts) {
   ghostNbSteps << nbSteps
 }
 // TODO bug when it is primitive int
-println("Part 2 value " + ghostNbSteps.reduce { Long a1, Long a2 -> lcm(a1 as long, a2 as long) })
+println("Part 2: " + ghostNbSteps.reduce { Long a1, Long a2 -> lcm(a1 as long, a2 as long) })
 
 reader.close()
 

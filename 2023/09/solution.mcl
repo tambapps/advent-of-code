@@ -1,4 +1,4 @@
-List historyList = new File('input.txt').readLines()
+List historyList = Files.readLines('input.txt')
   .map { String line -> line.split(' ').mapToInt { String it -> it.toInt() } }
 
 int sumLast = 0

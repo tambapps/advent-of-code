@@ -36,7 +36,7 @@ fun long execute(long expandBy) {
 
 fun void initGrid() {
   grid = [:]
-  List lines = new File('input.txt').readLines()
+  List lines = Files.readLines('input.txt')
   width = lines.getFirst<String>().length()
   height = lines.size()
   for (int y in 0..<height) {
