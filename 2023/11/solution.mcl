@@ -4,11 +4,10 @@ private Map grid
 private long width
 private long height
 
-@data
+@data(withConstructor=true)
 class Position {
   long x
   long y
-  constructor(this.x, this.y)
 }
 
 println("Part 1: " + execute(1l))
