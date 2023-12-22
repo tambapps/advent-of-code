@@ -5,7 +5,6 @@ static final char HORIZONTAL = `-`
 static final char DIAG_LR = `\\`
 static final char DIAG_RL = `/`
 
-// TODO make script class/trait/interface to have utilities to wait, and submit runnables
 internal ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()
 internal List futures = []
 internal Map sumMap = new ConcurrentHashMap()
