@@ -22,7 +22,7 @@ for (list<int> history in historyList) {
   for (int i in (steps.size() - 1)..1) {
     list<int> previousStep = steps[i]
     list<int> step = steps[i - 1]
-    step.last = previousStep.last + step[step.size() - 2]
+    step.last = previousStep.getLast<int>() + step[step.size() - 2]
   }
 
   // extrapolating previous
