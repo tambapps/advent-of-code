@@ -18,9 +18,9 @@ private static final Map WEAKNESS = [
 
 for (String line in f.readLines()) {
   def (char against, char xyz) = line.split(" ") // automatic casting String to char (charAt(0))
-  part1Score+= battleScore(PART1_MAP[xyz] as char, against)
+  part1Score+= battleScore(PART1_MAP.get<char>(xyz), against)
   char me = switch(xyz) {
-    `X` -> WEAKNESS[WEAKNESS[against] as char]
+    `X` -> WEAKNESS[WEAKNESS[against]]
     `Y` -> against
     `Z` -> WEAKNESS[against]
     else -> ` ` // marcel doesn't have exceptions yet. so let's just hope this case never happens
@@ -31,18 +31,12 @@ for (String line in f.readLines()) {
 println("Part 1: score is $part1Score")
 println("Part 2: score is $part2Score")
 
-fun int battleScore(char rps, char against) {
-  return score(rps) + outcome(rps, against)
-}
+fun int battleScore(char rps, char against) -> score(rps) + outcome(rps, against)
 
-fun int outcome(char rps, char against) {
-  return when {
-    rps == WEAKNESS[against] -> 6 // win
-    against == WEAKNESS[rps] -> 0 // lose
+fun int outcome(char rps, char against) -> when {
+    rps == WEAKNESS.get<char>(against) -> 6 // win
+    against == WEAKNESS.get<char>(rps) -> 0 // lose
     else -> 3 // draw
   }
-}
 
-fun int score(char rps) {
-  return (rps - `A` + 1) as int
-}
+fun int score(char rps) -> (rps - `A` + 1) as int
