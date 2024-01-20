@@ -5,8 +5,6 @@ static final char HORIZONTAL = `-`
 static final char DIAG_LR = `\\`
 static final char DIAG_RL = `/`
 
-internal ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()
-internal List futures = []
 internal Map sumMap = new ConcurrentHashMap()
 internal list<char> list = []
 internal int width
@@ -22,25 +20,21 @@ println("Part 1: " + simulate(new Beam(x: -1, y: 0, direction: Beam.RIGHT)))
 
 // part 2
 // top and bottom row
-for (int i in 0..<width) {
-  submit(new Beam(x: i, y: -1, direction: Beam.DOWN))
-  submit(new Beam(x: i, y: height, direction: Beam.UP))
+async {
+  for (int i in 0..<width) {
+    submit(new Beam(x: i, y: -1, direction: Beam.DOWN))
+    submit(new Beam(x: i, y: height, direction: Beam.UP))
+  }
+  // left and right column
+  for (int i in 0..<height) {
+    submit(new Beam(x: -1, y: i, direction: Beam.RIGHT))
+    submit(new Beam(x: width, y: i, direction: Beam.LEFT))
+  }
+  await { int completedTasks, int total -> print("\rComputed $completedTasks out of $total configurations") }
 }
-// left and right column
-for (int i in 0..<height) {
-  submit(new Beam(x: -1, y: i, direction: Beam.RIGHT))
-  submit(new Beam(x: width, y: i, direction: Beam.LEFT))
-}
-int i = 0
-for (Future f in futures) {
-  print("\rComputed ${i++} out of ${futures.size()} configurations")
-  f.get()
-}
-
 println("\nPart 2: " + sumMap.values().max())
-executor.shutdown()
 
-fun void submit(Beam start) -> futures << executor.submit { sumMap.put(start, simulate(start)) }
+async fun void submit(Beam start) -> sumMap.put(start, simulate(start))
 
 fun int simulate(Beam start) {
   Set beamHistory = []
@@ -83,8 +77,8 @@ fun int simulate(Beam start) {
 
 fun char putAt(int x, int y, char c) -> list[y * width + x] = c
 
+@data
 class Beam {
-
   // TODO do enum on marcel
   static final int LEFT = 0
   static final int UP = 1
@@ -99,13 +93,6 @@ class Beam {
 
   fun Beam copy() -> new Beam(x, y, direction)
 
-  fun int hashCode() -> Integer.hashCode(x) * 31 + Integer.hashCode(y) * 31 + direction
-
-  fun bool equals(Object o) {
-    Beam b = o as Beam
-    return b.x == x && b.y == y && b.direction == direction
-  }
-
   fun void rotateClockwise() -> direction = (direction + 1) % 4
   fun void rotateAntiClockwise() -> direction = direction == 0 ? DOWN : direction - 1
 
@@ -117,8 +104,6 @@ class Beam {
       DOWN -> y++
     }
   }
-
-  fun String toString() -> "Beam(x: $x, y: $y, direction: $direction)"
 }
 
 fun String toString() {
