@@ -5,7 +5,7 @@ int sum = 0
 for (String line in Files.readLines('input.txt')) {
   def (String arrangementStr, String expectedStr) = line.split(' ')
   List arrangement = toArrangement(arrangementStr)
-  list<int> expected = expectedStr.split(',').mapToInt { String it -> it.toInt() }
+  list<int> expected = [for String it in expectedStr.split(',') -> it.toInt()]
   for (List combination in arrangement.combinations()) {
     if (satisfies(combination, expected)) sum++
   }
@@ -14,9 +14,7 @@ for (String line in Files.readLines('input.txt')) {
 println("Part 1: $sum")
 
 fun bool satisfies(List combination, list<int> expected) {
-  List parts = combination.join()
-    .split('\\.+', -1)
-    .findAll { String it -> !it.isEmpty() }
+  List parts = [for String it in combination.join().split('\\.+', -1) if !it.isEmpty()]
   if (parts.size() != expected.size()) return false
   for (int i in 0..<expected.size()) {
     if (parts.get<String>(i).length() != expected[i]) return false

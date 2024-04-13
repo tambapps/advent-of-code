@@ -10,13 +10,13 @@ private RangeMap lightToTemperature = parseMap()
 private RangeMap temperatureToHumidity = parseMap()
 private RangeMap humidityToLocation = parseMap()
 
-println("Part 1: value=" + seeds.mapToLong { findLocation(it) }.min())
+list<long> locations = [for long seed in seeds -> findLocation(seed)]
+println("Part 1: value=" + locations.min())
 
 long min = Long.MAX_VALUE
 for (int i in 0..<(seeds.size() / 2)) {
   long start = seeds[i * 2]
   long end = start + seeds[i * 2 + 1] - 1
-  println((start..end))
   for (long j in start..end) {
     long potential = findLocation(j)
     min = min > potential ? potential : min
@@ -44,14 +44,14 @@ fun long findLocation(long seed) -> humidityToLocation[
 
 fun list<long> parseSeeds() {
   String line = next()
-  list<long> l =  line.substring(line.indexOf(':') + 1).trim().split(' ').mapToLong { String it -> it.toLong() }
+  list<long> l = [for String it in line.substring(line.indexOf(':') + 1).trim().split(' ') -> it.toLong()]
   next(); next();
   return l
 }
 fun RangeMap parseMap() {
   RangeMap map = new RangeMap()
   while (String line = next()) {
-    def (long destRangeStart, long sourceRangeStart, long rangeLength) = line.split(' ').mapToLong { String it -> it.toLong() }
+    def (long destRangeStart, long sourceRangeStart, long rangeLength) = [for String it in line.split(' ') -> it.toLong()]
     map.add(new RangeMapping(destRangeStart, sourceRangeStart, rangeLength))
   }
   next() // skip next useless line

@@ -1,7 +1,9 @@
-def (list<long> timeLimits, list<long> distanceRecords) = Files.readLines('input.txt')
-  .map { String line ->
-    line.substring(line.indexOf(':') + 1).trim().split('\\s+').mapToLong { String it -> it.toLong() }
-}
+def (list<long> timeLimits, list<long> distanceRecords) = [
+  for String line in Files.readLines('input.txt') -> [
+    for String it in line.substring(line.indexOf(':') + 1).trim().split('\\s+') ->
+      it.toLong()
+    ] as list<long>
+  ]
 
 /* part 1 */
 int mul = 1
@@ -9,10 +11,10 @@ for (int i in 0..<timeLimits.size()) mul *= computeWays(timeLimits[i], distanceR
 println("Part 1: value=$mul")
 
 /* part 2 */
-def (long timeLimit, long distanceRecord) = Files.readLines('input.txt')
-  .map { String line ->
+def (long timeLimit, long distanceRecord) = [
+  for String line in Files.readLines('input.txt') ->
     line.substring(line.indexOf(':') + 1).replaceAll(' ', '').toLong()
-}
+]
 println("Part 2: value=" + computeWays(timeLimit, distanceRecord))
 
 fun long computeWays(long timeLimit, long distanceRecord) {

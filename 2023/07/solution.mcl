@@ -26,10 +26,10 @@ List hands = []
 List hands2 = []
 for (String line in Files.readLines('input.txt')) {
   def (String value, String bidStr) = line.split(' ')
-  list<int> cardValues = value.toList().mapToInt { CARD_ORDER[it] }
+  list<int> cardValues = [for char c in value -> CARD_ORDER[c]]
   hands << new Hand(value, strength(value), cardValues, bidStr.toInt())
 
-  list<int> cardValues2 = value.toList().mapToInt { it == `J` ? 0 : CARD_ORDER[it] } // J has lowest priority
+  list<int> cardValues2 = [for char c in value -> c == `J` ? 0 : CARD_ORDER[c]] // J has lowest priority
   hands2 << new Hand(value, strength2(value), cardValues2, bidStr.toInt())
 }
 println("Part 1: value=" + totalWinnings(hands))

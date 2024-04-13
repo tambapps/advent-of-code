@@ -1,5 +1,6 @@
-List historyList = Files.readLines('input.txt')
-  .map { String line -> line.split(' ').mapToInt { String it -> it.toInt() } }
+List historyList = [for String line in Files.readLines('input.txt') ->
+  [for String it in line.split(' ') -> it.toInt()] as list<int>
+]
 
 int sumLast = 0
 int sumFirst = 0

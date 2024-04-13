@@ -3,10 +3,10 @@ Map cardWinsCountMap = [:] // card ID -> count of winning numbers
 int sum = 0
 int n = 0
 for (String line in Files.readLines('input.txt')) {
-  def (list<int> winningNumbers, list<int> myNumbers) = line.substring(line.indexOf(':') + 1)
-    .split("\\|").map { String listStr ->
-      listStr.trim().split('\\s+').mapToInt { String it -> it.toInt() }
-    }
+  def (list<int> winningNumbers, list<int> myNumbers) = [
+    for String listStr in line.substring(line.indexOf(':') + 1).split("\\|") ->
+      [for String it in listStr.trim().split('\\s+') -> it.toInt()] as list<int>
+    ]
     int winningNumbersCount = myNumbers.count { winningNumbers.contains(it) }
     if (winningNumbersCount > 0) sum+= pow(2, winningNumbersCount - 1)
     cardWinsCountMap[++n] = winningNumbersCount
