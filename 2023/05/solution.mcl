@@ -10,8 +10,7 @@ private RangeMap lightToTemperature = parseMap()
 private RangeMap temperatureToHumidity = parseMap()
 private RangeMap humidityToLocation = parseMap()
 
-list<long> locations = [for long seed in seeds -> findLocation(seed)]
-println("Part 1: value=" + locations.min())
+println("Part 1: value=" + [for long seed in seeds -> findLocation(seed)].min())
 
 long min = Long.MAX_VALUE
 for (int i in 0..<(seeds.size() / 2)) {

@@ -1,5 +1,5 @@
 List historyList = [for String line in Files.readLines('input.txt') ->
-  [for String it in line.split(' ') -> it.toInt()] as list<int>
+  [for String it in line.split(' ') -> it.toInt()]
 ]
 
 int sumLast = 0

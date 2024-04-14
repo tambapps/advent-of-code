@@ -1,6 +1,5 @@
 String[] sequences = new File('input.txt').readText().split(',')
-list<int> hashes = [for String seq in sequences -> hash(seq)]
-println("Part 1: " + hashes.sum())
+println("Part 1: " + [for String seq in sequences -> hash(seq)].sum())
 
 Map boxes = [:].withDefault(true) { [] as List }
 for (String input in sequences) {
