@@ -11,7 +11,7 @@ for (String input in sequences) {
     def (String label, String nStr) = input.split('=')
     int n = nStr.toInt()
     List lenses = boxes[hash(label)]
-    Lens b = lenses.find { Lens it -> it.label == label }
+    Lens b = when Lens l in lenses -> l.label == label
     if (b != null) b.n = n
     else lenses.add(new Lens(label, n))
   }

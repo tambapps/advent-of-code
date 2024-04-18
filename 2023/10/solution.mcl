@@ -15,7 +15,7 @@ fun Map computeDistances() {
     Node current = startNode
     while (current != null) {
       distances[current] = i++
-      current = current.adj.find { !distances.containsKey(it) }
+      current = when Node it in current.adj -> !distances.containsKey(it)
     }
     distMaps << distances
   }

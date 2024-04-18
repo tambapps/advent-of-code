@@ -15,7 +15,7 @@ private int sum2 = 0
 
 for (String line in Files.readLines('input.txt')) {
   // part 1
-  char first1 = line.findChar { it.isDigit() }
+  char first1 = when char c in line -> c.isDigit()
   char last1 = line.findLastChar { it.isDigit() }
   sum1 += toNumber(first1, last1)
 
@@ -32,7 +32,7 @@ fun int toNumber(char firstDigit, char lastDigit) -> (firstDigit - `0`) * 10 + l
 
 fun char findCalibrationDigits(String line, IntRange range) {
   for (int i in range) {
-    String wordDigit = MAPPINGS.keySet().find { String it -> line?[i..<(i + it.length())] == it }
+    String wordDigit = when String it in MAPPINGS.keySet() -> line?[i..<(i + it.length())] == it
     if (wordDigit != null) return MAPPINGS[wordDigit]
   }
   throw new RuntimeException()
