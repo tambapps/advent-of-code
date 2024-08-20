@@ -5,8 +5,8 @@ int part2Score = 0
 List compartmentGroup = []
 for (String line in new File("input.txt").readLines()) {
   int rucksackSize = line.length() / 2
-  list<char> sack1 = line[0..<rucksackSize]
-  list<char> sack2 = line[rucksackSize..<line.length()]
+  String sack1 = line[0..<rucksackSize]
+  String sack2 = line[rucksackSize..<line.length()]
   char commonItem = sack1.findChar { sack2.contains(it) }
   part1Score+= priority(commonItem)
 
