@@ -1,7 +1,7 @@
 static final Map CARD_ORDER = [`A`:13, `K`:12, `Q`:11, `J`:10, `T`: 9, `9`: 8,
   `8`: 7, `7`: 6, `6`: 5, `5`: 4, `4`: 3, `3`: 2, `2`: 1]
-static final set<int> FOUR_OF_A_KIND_COUNTS = [4, 1]
-static final set<int> THREE_OF_A_KIND_COUNTS = [3, 1] // actually for combination 3, 1, 1
+static final Set<int> FOUR_OF_A_KIND_COUNTS = [4, 1]
+static final Set<int> THREE_OF_A_KIND_COUNTS = [3, 1] // actually for combination 3, 1, 1
 // these below constants just random numbers. only the order matters
 static final int FIVE_OF_A_KIND = 7
 static final int FOUR_OF_A_KIND = 6
@@ -14,7 +14,7 @@ static final int HIGH_CARD = 1
 @comparable
 class Hand {
   int strength
-  list<int> cardValues
+  List<int> cardValues
   @comparable.Exclude
   String value
   @comparable.Exclude
@@ -26,10 +26,10 @@ List hands = []
 List hands2 = []
 for (String line in Files.readLines('input.txt')) {
   def (String value, String bidStr) = line.split(' ')
-  list<int> cardValues = [for char c in value -> CARD_ORDER[c]]
+  List<int> cardValues = [for char c in value -> CARD_ORDER[c]]
   hands << new Hand(value, strength(value), cardValues, bidStr.toInt())
 
-  list<int> cardValues2 = [for char c in value -> c == `J` ? 0 : CARD_ORDER[c]] // J has lowest priority
+  List<int> cardValues2 = [for char c in value -> c == `J` ? 0 : CARD_ORDER[c]] // J has lowest priority
   hands2 << new Hand(value, strength2(value), cardValues2, bidStr.toInt())
 }
 println("Part 1: value=" + totalWinnings(hands))
@@ -64,7 +64,7 @@ fun Map computeOccMap(String value) {
 
 fun int doComputeStrength(Map occMap) {
   int size = occMap.size()
-  set<int> counts = occMap.values().toIntSet()
+  Set<int> counts = occMap.values().toIntSet()
   return switch(size) {
     1 -> FIVE_OF_A_KIND
     2 -> switch(counts) {

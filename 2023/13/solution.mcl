@@ -70,7 +70,7 @@ fun void checkYSymmetricDiffs(Array2d array, int middleY) {
 
 class Array2d {
 
-  list<char> list = []
+  List<char> list = []
   int width
   int height
 

@@ -1,8 +1,8 @@
-def (list<long> timeLimits, list<long> distanceRecords) = [
+def (List<long> timeLimits, List<long> distanceRecords) = [
   for String line in Files.readLines('input.txt') -> [
     for String it in line.substring(line.indexOf(':') + 1).trim().split('\\s+') ->
       it.toLong()
-    ] as list<long>
+    ] as List<long>
   ]
 
 /* part 1 */

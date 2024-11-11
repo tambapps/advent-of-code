@@ -4,8 +4,8 @@ Integer marker1 = null
 Integer marker2 = null
 int i = 0
 while (true) {
-  set<char> uniqueChars1 = text[i..(i + 3)].toSet()
-  set<char> uniqueChars2 = text[i..(i + 14)].toSet()
+  Set<char> uniqueChars1 = text[i..(i + 3)].toSet()
+  Set<char> uniqueChars2 = text[i..(i + 14)].toSet()
 
   if (marker1 == null && uniqueChars1.size() == 4) {
     marker1 = i + 4

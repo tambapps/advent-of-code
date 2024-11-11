@@ -4,13 +4,13 @@ List historyList = [for String line in Files.readLines('input.txt') ->
 
 int sumLast = 0
 int sumFirst = 0
-for (list<int> history in historyList) {
+for (List<int> history in historyList) {
   List steps = [history]
 
   // generating sequence of differences
-  list<int> current = history.toList()
+  List<int> current = history.toList()
   while (current.any { it != 0 }) {
-    list<int> next = []
+    List<int> next = []
     for (int i in 0..<(current.size() - 1)) {
       next.add(current[i + 1] - current[i])
     }
@@ -19,18 +19,18 @@ for (list<int> history in historyList) {
   }
 
   // extrapolating next
-  for (list<int> step in steps) step.add(0)
+  for (List<int> step in steps) step.add(0)
   for (int i in (steps.size() - 1)..1) {
-    list<int> previousStep = steps[i]
-    list<int> step = steps[i - 1]
+    List<int> previousStep = steps[i]
+    List<int> step = steps[i - 1]
     step.last = previousStep.getLast<int>() + step[step.size() - 2]
   }
 
   // extrapolating previous
-  for (list<int> step in steps) step.add(0, 0)
+  for (List<int> step in steps) step.add(0, 0)
   for (int i in (steps.size() - 1)..1) {
-    list<int> previousStep = steps[i]
-    list<int> step = steps[i - 1]
+    List<int> previousStep = steps[i]
+    List<int> step = steps[i - 1]
     step.first = step[1] - previousStep[0]
   }
   sumLast+= history[history.size() - 1]

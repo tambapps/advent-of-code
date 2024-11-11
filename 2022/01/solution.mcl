@@ -1,6 +1,6 @@
 File f = new File("input.txt")
 
-list<int> list = [0] // list of primitive ints
+List<int> list = [0] // list of primitive ints
 for (String line in f.readLines()) {
   if (!line.isEmpty()) list[list.lastIndex] += line.toInt()
   else list << 0

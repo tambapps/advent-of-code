@@ -1,6 +1,6 @@
 private static final Character GEAR = `*`
 
-private list<char> grid = []
+private List<char> grid = []
 private int n;
 private int height;
 

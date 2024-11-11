@@ -89,7 +89,7 @@ fun long distance(Position start, Position end) -> abs(end.x - start.x) + abs(en
 fun long abs(long a) -> a >= 0 ? a : - a
 
 // for debug purpose
-fun String toString() {
+override fun String toString() {
   StringBuilder builder = new StringBuilder()
   for (long y in 0..<height) {
     for (long x in 0..<width) {

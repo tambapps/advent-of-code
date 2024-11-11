@@ -1,4 +1,4 @@
-private list<char> grid = []
+private List<char> grid = []
 private int n;
 private Map nodes = [:]
 private Node start
@@ -78,7 +78,7 @@ class Node {
     if (!adj.contains(node)) adj.add(node)
   }
 
-  fun String toString() -> "Node(x=$x, y=$y)"
+  override fun String toString() -> "Node(x=$x, y=$y)"
 }
 
 fun char getAt(Node node) -> getAt(node.x, node.y)

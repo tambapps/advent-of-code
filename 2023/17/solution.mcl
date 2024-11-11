@@ -4,7 +4,7 @@ static final char HORIZONTAL = `-`
 static final char DIAG_LR = `\\`
 static final char DIAG_RL = `/`
 
-internal list<int> list = []
+internal List<int> list = []
 internal int width
 internal int height
 

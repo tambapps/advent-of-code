@@ -6,7 +6,7 @@ static final char DIAG_LR = `\\`
 static final char DIAG_RL = `/`
 
 internal Map sumMap = new ConcurrentHashMap()
-internal list<char> list = []
+internal List<char> list = []
 internal int width
 internal int height
 
@@ -106,7 +106,7 @@ class Beam {
   }
 }
 
-fun String toString() {
+override fun String toString() {
   StringBuilder builder = new StringBuilder()
   for (int i in 0..<height) {
     builder.append(list[(i * height)..<((i + 1) * height)])

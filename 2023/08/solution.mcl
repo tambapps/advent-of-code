@@ -26,7 +26,7 @@ while (current != END) {
 }
 println("Part 1: $nbSteps")
 
-list<long> ghostNbSteps = []
+List<long> ghostNbSteps = []
 for (String ghost in ghosts) {
   dirIndex = 0
   nbSteps = 0l

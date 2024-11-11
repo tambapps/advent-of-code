@@ -1,7 +1,7 @@
 private int i = 0
 private BufferedReader reader = Files.reader('input.txt')
 
-private list<long> seeds = parseSeeds()
+private List<long> seeds = parseSeeds()
 private RangeMap seedToSoilMap = parseMap()
 private RangeMap soilToFertilizer = parseMap()
 private RangeMap fertilizerToWater = parseMap()
@@ -41,9 +41,9 @@ fun long findLocation(long seed) -> humidityToLocation[
   ]
 ]
 
-fun list<long> parseSeeds() {
+fun List<long> parseSeeds() {
   String line = next()
-  list<long> l = [for String it in line.substring(line.indexOf(':') + 1).trim().split(' ') -> it.toLong()]
+  List<long> l = [for String it in line.substring(line.indexOf(':') + 1).trim().split(' ') -> it.toLong()]
   next(); next();
   return l
 }
@@ -68,7 +68,7 @@ class RangeMapping {
     this.sourceRangeEnd = sourceRangeStart + rangeLength - 1
   }
 
-  fun String toString() -> "$sourceRangeStart to $sourceRangeEnd. DestStart $destRangeStart"
+  override fun String toString() -> "$sourceRangeStart to $sourceRangeEnd. DestStart $destRangeStart"
 }
 
 class RangeMap {

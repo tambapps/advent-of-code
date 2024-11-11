@@ -31,7 +31,7 @@ for (String line in new File('input.txt').readLines()) {
   }
 }
 
-list<int> allSizes = allDirectories.mapToInt { Directory d -> d.size }
+List<int> allSizes = allDirectories.mapToInt { Directory d -> d.size }
 int part1Sum = allSizes.filter { it <= 100000 }
   .sum()
 

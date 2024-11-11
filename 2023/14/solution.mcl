@@ -1,7 +1,7 @@
 static final char ROUND = `O`
 static final char EMPTY = `.`
 
-private list<char> list = []
+private List<char> list = []
 private int width
 private int height
 
@@ -60,7 +60,7 @@ fun int computeLoad() {
 fun char getAt(int x, int y) -> list[y * width + x]
 fun char putAt(int x, int y, char c) -> list[y * width + x] = c
 
-fun String toString() {
+override fun String toString() {
   StringBuilder builder = new StringBuilder()
   for (int i in 0..<height) {
     builder.append(list[(i * height)..<((i + 1) * height)])
