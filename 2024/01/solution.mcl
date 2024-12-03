@@ -1,0 +1,26 @@
+import static java.lang.Math.abs
+File f = new File('input.txt')
+
+List<int> leftList = []
+List<int> rightList = []
+for (String line in f.readLines()) {
+  // first group is whole match, we don't care about that
+  def (int left, int right) = (line =~ r/(\d+)\s+(\d+)/).definedGroups()
+    .mapToInt { String it -> it.toInt() }
+  leftList << left
+  rightList << right
+}
+leftList.sort()
+rightList.sort()
+
+int result = 0
+for (int i in 0..<leftList.size()) {
+  result += abs(leftList[i] - rightList[i])
+}
+
+println("Part 1: $result")
+result = 0
+for (int e in leftList) {
+  result += rightList.count { it == e } * e
+}
+println("Part 2: $result")

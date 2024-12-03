@@ -1,0 +1,40 @@
+File f = new File('input.txt')
+
+List reports = []
+for (String line in f.readLines()) {
+  reports << line.split("\\s+").mapToInt { String it -> it.toInt() }
+}
+
+def (int part1, int part2) = [0, 0]
+for (List<int> report in reports) {
+  Integer previous = null
+  bool increase = report[0] > report[1]
+  if (isSafeReport(report)) part1++
+  if (isDampenerSafeReport(report)) part2++
+}
+println("Part 1: $part1")
+println("Part 2: $part2")
+
+fun bool isSafeReport(List<int> report) {
+  Integer previous = null
+  bool increase = report[0] < report[1]
+  for (int level in report) {
+    if (!(previous == null
+                || increase && previous < level && previous >= level - 3
+                || !increase && previous > level && previous <= level + 3)) {
+      return false
+    }
+    previous = level
+  }
+  return true
+}
+
+fun bool isDampenerSafeReport(List<int> report) {
+  if (isSafeReport(report)) return true
+  for(int i in 0..<report.size()) {
+    reportTry = report.toList()
+    reportTry.removeAt(i)
+    if (isSafeReport(reportTry)) return true
+  }
+  return false
+}
