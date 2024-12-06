@@ -1,0 +1,48 @@
+import extension Array2dExtension
+
+private static final String XMAS = "XMAS"
+private static final String MAS = "MAS"
+private List<char> grid = []
+
+int xmasCount = 0
+int masCount = 0
+
+for (String line in Files.readLines('input.txt')) {
+  Array2dExtension.width = line.size()
+  grid << line
+  Array2dExtension.height++
+}
+
+for (int y in 0..<Array2dExtension.height) {
+  for (int x in 0..<Array2dExtension.width) {
+    // part 1
+    for (int dX in -1..1) {
+      for (int dY in -1..1) {
+        if (search(x, y, dX, dY, XMAS)) xmasCount++
+      }
+    }
+    // part 2
+    if ((search(x - 1, y - 1, 1, 1, MAS) || search(x + 1, y + 1, -1, -1, MAS))
+      && (search(x + 1, y - 1, -1, 1, MAS) || search(x - 1, y + 1, 1, -1, MAS))) masCount++
+  }
+}
+println("Part 1: $xmasCount")
+println("Part 1: $masCount")
+
+fun bool search(int x, int y, int vX, int vY, String word) {
+  int endX
+  int endY
+  for (int i in 0..<word.size()) {
+    if (grid?[endX = x + vX * i, endY = y + vY * i] != word[i]) return false
+  }
+  return true
+}
+
+extension class Array2dExtension for List<char> {
+  static int width
+  static int height = 0
+  fun char getAt(int x, int y) -> this[y * width + x]
+  fun Character getAtSafe(int x, int y) -> x >= 0 && x < width && y >= 0 && y < height
+    ? this[y * width + x]
+    : null
+}
