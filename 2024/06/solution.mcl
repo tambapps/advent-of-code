@@ -1,0 +1,65 @@
+import extension Array2dExtension
+
+// vectors
+private static final Position UP = new Position(x: 0, y: -1)
+private static final Position RIGHT = new Position(x: 1, y: 0)
+private static final Position DOWN = new Position(x: 0, y: 1)
+private static final Position LEFT = new Position(x: -1, y: 0)
+
+private List<char> grid = []
+private Position position = null
+private Position direction = UP
+
+for (String line in Files.readLines('input.txt')) {
+  Array2dExtension.width = line.size()
+  for (int x in 0..<line.size()) {
+    grid << line[x]
+    if (position == null && line[x] == `^`) position = new Position(x: x, y: Array2dExtension.height)
+  }
+  Array2dExtension.height++
+}
+Set visitedPositions = [position]
+
+Position next;
+while (grid?[next = position + direction] != null) {
+  switch (grid?[next]) {
+    `#` -> turn()
+    `.` -> {
+      visitedPositions << next
+      position = next
+    }
+  }
+}
+println("Part 1: " + visitedPositions.size())
+
+fun void turn() {
+  direction = switch (direction) {
+    UP -> RIGHT
+    RIGHT -> DOWN
+    DOWN -> LEFT
+    LEFT -> UP
+    else -> throw new RuntimeException()
+  }
+}
+
+
+extension class Array2dExtension for List<char> {
+  static int width
+  static int height = 0
+  fun char getAt(Position p) -> this[p.x, p.y]
+  fun Character getAtSafe(Position p) -> this?[p.x, p.y]
+  fun char getAt(int x, int y) -> this[y * width + x]
+  fun Character getAtSafe(int x, int y) -> x >= 0 && x < width && y >= 0 && y < height
+    ? this[y * width + x]
+    : null
+}
+
+@data
+class Position {
+  int x
+  int y
+
+  constructor(this.x, this.y)
+
+  fun Position plus(Position p) -> new Position(x: x + p.x, y: y + p.y)
+}
