@@ -1,0 +1,40 @@
+private List orderingRules = []
+List updates = []
+try (BufferedReader reader = Files.reader('input.txt')) {
+  while (String line = reader.readLine()) {
+    orderingRules << line.split('\\|').mapToInt { String it -> it.toInt() }
+  }
+  while (String line = reader.readLine()) {
+    updates << line.split('\\,').mapToInt { String it -> it.toInt() }
+  }
+}
+
+int result1 = 0
+int result2 = 0
+for (List<int> update in updates) {
+  if (isCorrectlyOrdered(update)) {
+    result1 += update[update.size() / 2]
+  } else {
+
+  }
+}
+println("Part 1: $result1")
+println("Part 2: $result2")
+
+fun bool isCorrectlyOrdered(List<int> update) {
+  for (int i in 0..<update.size()) {
+    if (!isCorrectlyOrdered(update, i)) return false
+  }
+  return true
+}
+
+fun bool isCorrectlyOrdered(List<int> update, int i) {
+  int u = update[i]
+  List matchingRules = orderingRules.findAll { List<int> rule -> rule.getFirst<int>() == u }
+  for (List<int> rule in matchingRules) {
+    int index = update.indexOf(rule.last)
+    if (index < 0) continue
+    if (i > index) return false
+  }
+  return true
+}
