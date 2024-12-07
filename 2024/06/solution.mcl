@@ -1,47 +1,99 @@
 import extension Array2dExtension
+import java.util.function.Predicate
 
 // vectors
-private static final Position UP = new Position(x: 0, y: -1)
-private static final Position RIGHT = new Position(x: 1, y: 0)
-private static final Position DOWN = new Position(x: 0, y: 1)
-private static final Position LEFT = new Position(x: -1, y: 0)
+public static final Position UP = new Position(x: 0, y: -1)
+public static final Position RIGHT = new Position(x: 1, y: 0)
+public static final Position DOWN = new Position(x: 0, y: 1)
+public static final Position LEFT = new Position(x: -1, y: 0)
 
-private List<char> grid = []
-private Position position = null
-private Position direction = UP
+public List<char> grid = []
+public Position startPosition = null
 
 for (String line in Files.readLines('input.txt')) {
   Array2dExtension.width = line.size()
   for (int x in 0..<line.size()) {
     grid << line[x]
-    if (position == null && line[x] == `^`) position = new Position(x: x, y: Array2dExtension.height)
+    if (startPosition == null && line[x] == `^`) startPosition = new Position(x: x, y: Array2dExtension.height)
   }
   Array2dExtension.height++
 }
-Set visitedPositions = [position]
 
-Position next;
-while (grid?[next = position + direction] != null) {
-  switch (grid?[next]) {
-    `#` -> turn()
-    `.` -> {
-      visitedPositions << next
+// set because we just want to count unique positions
+println("Part 1: " + simulateWhile([startPosition] as Set) { Position next -> grid?[next] != null }.size())
+
+int cyclePosCount = 0
+for (int y in 0..<Array2dExtension.height) {
+  for (int x in 0..<Array2dExtension.width) {
+    char c = grid[x, y]
+    if (c == `#` || c == `^`) continue
+    List visitedPositions = [startPosition.withDirection(UP)] // list because we want to look for a cycle
+    grid[x, y] = `#`
+    simulateWhile(visitedPositions) { Position next -> grid?[next] != null && !hasCycle(visitedPositions) }
+    if (hasCycle(visitedPositions)) {
+      cyclePosCount++
+    }
+    grid[x, y] = c
+  }
+}
+println("Part 2: " + cyclePosCount)
+
+
+fun bool hasCycle(List positions) {
+  Set positionSet = positions.toSet()
+  Set visited = []
+  for (Position position in positions) {
+    if (!visited.contains(position)
+        && dfs(position, null as Position, positionSet, visited)) return true
+  }
+  return false
+}
+
+fun bool dfs(Position current, Position parent, Set positionSet, Set visited) {
+  visited.add(current)
+
+  // looking for valid neighbor
+  Position nextDirection = current.direction
+  Position next;
+  do {
+    next = (current + nextDirection).withDirection(nextDirection)
+    nextDirection = turn(nextDirection)
+  } while(!grid?[next] || grid[next] == `#`)
+  Position neighbor = next
+  if (positionSet.contains(neighbor)) {
+        if (!visited.contains(neighbor)) {
+          if (dfs(neighbor, current, positionSet, visited)) {
+            return true
+          }
+        } else if (!neighbor.equals(parent)) {
+          return true
+        }
+      }
+  return false
+}
+
+fun Collection simulateWhile(Collection visitedPositions, Predicate condition) {
+  Position direction = UP // we know we always start up
+  Position next;
+  Position position = startPosition
+  while (condition.test(next = position + direction)) {
+    // not using switch because we need to modify a local variable
+    if (grid?[next] == `#`) direction = turn(direction)
+    else if (grid?[next] == `.` || grid?[next] == `^`) {
+      visitedPositions << next.withDirection(direction)
       position = next
     }
   }
-}
-println("Part 1: " + visitedPositions.size())
-
-fun void turn() {
-  direction = switch (direction) {
-    UP -> RIGHT
-    RIGHT -> DOWN
-    DOWN -> LEFT
-    LEFT -> UP
-    else -> throw new RuntimeException()
-  }
+  return visitedPositions
 }
 
+fun Position turn(Position direction) -> switch (direction) {
+  UP -> RIGHT
+  RIGHT -> DOWN
+  DOWN -> LEFT
+  LEFT -> UP
+  else -> throw new RuntimeException()
+}
 
 extension class Array2dExtension for List<char> {
   static int width
@@ -49,6 +101,7 @@ extension class Array2dExtension for List<char> {
   fun char getAt(Position p) -> this[p.x, p.y]
   fun Character getAtSafe(Position p) -> this?[p.x, p.y]
   fun char getAt(int x, int y) -> this[y * width + x]
+  fun void putAt(int x, int y, char c) -> this[y * width + x] = c
   fun Character getAtSafe(int x, int y) -> x >= 0 && x < width && y >= 0 && y < height
     ? this[y * width + x]
     : null
@@ -58,8 +111,13 @@ extension class Array2dExtension for List<char> {
 class Position {
   int x
   int y
+  Position direction
 
-  constructor(this.x, this.y)
+  constructor(this.x, this.y): this(x, y, null as Position)
+  constructor(this.x, this.y, this.direction)
 
   fun Position plus(Position p) -> new Position(x: x + p.x, y: y + p.y)
+  fun Position withDirection(Position direction) -> new Position(x: x, y: y, direction: direction)
+
+  override fun String toString() -> direction != null ? "($x, $y, direction=$direction)" : "($x, $y)"
 }
