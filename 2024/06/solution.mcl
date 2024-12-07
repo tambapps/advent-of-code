@@ -7,49 +7,50 @@ public static final Position RIGHT = new Position(x: 1, y: 0)
 public static final Position DOWN = new Position(x: 0, y: 1)
 public static final Position LEFT = new Position(x: -1, y: 0)
 
-public List<char> grid = []
+// global because doesn't change
 public Position startPosition = null
 
+List<char> originalGrid = []
 for (String line in Files.readLines('input.txt')) {
   Array2dExtension.width = line.size()
   for (int x in 0..<line.size()) {
-    grid << line[x]
+    originalGrid << line[x]
     if (startPosition == null && line[x] == `^`) startPosition = new Position(x: x, y: Array2dExtension.height)
   }
   Array2dExtension.height++
 }
 
 // set because we just want to count unique positions
-println("Part 1: " + simulateWhile([startPosition] as Set) { Position next -> grid?[next] != null }.size())
+println("Part 1: " + simulateWhile(originalGrid, [startPosition] as Set, false) { Position next -> originalGrid?[next] != null }.size())
 
 int cyclePosCount = 0
 for (int y in 0..<Array2dExtension.height) {
   for (int x in 0..<Array2dExtension.width) {
-    char c = grid[x, y]
+    char c = originalGrid[x, y]
     if (c == `#` || c == `^`) continue
-    List visitedPositions = [startPosition.withDirection(UP)] // list because we want to look for a cycle
+    List<char> grid = originalGrid.toList()
     grid[x, y] = `#`
-    simulateWhile(visitedPositions) { Position next -> grid?[next] != null && !hasCycle(visitedPositions) }
-    if (hasCycle(visitedPositions)) {
+    List visitedPositions = [startPosition.withDirection(UP)] // list because we want to look for a cycle
+    simulateWhile(grid, visitedPositions, true) { Position next -> grid?[next] != null && !hasCycle(grid, visitedPositions) }
+    if (hasCycle(grid, visitedPositions)) {
       cyclePosCount++
     }
-    grid[x, y] = c
   }
 }
 println("Part 2: " + cyclePosCount)
 
 
-fun bool hasCycle(List positions) {
+fun bool hasCycle(List<char> grid, List positions) {
   Set positionSet = positions.toSet()
   Set visited = []
   for (Position position in positions) {
     if (!visited.contains(position)
-        && dfs(position, null as Position, positionSet, visited)) return true
+        && dfs(grid, position, null as Position, positionSet, visited)) return true
   }
   return false
 }
 
-fun bool dfs(Position current, Position parent, Set positionSet, Set visited) {
+fun bool dfs(List<char> grid, Position current, Position parent, Set positionSet, Set visited) {
   visited.add(current)
 
   // looking for valid neighbor
@@ -62,7 +63,7 @@ fun bool dfs(Position current, Position parent, Set positionSet, Set visited) {
   Position neighbor = next
   if (positionSet.contains(neighbor)) {
         if (!visited.contains(neighbor)) {
-          if (dfs(neighbor, current, positionSet, visited)) {
+          if (dfs(grid, neighbor, current, positionSet, visited)) {
             return true
           }
         } else if (!neighbor.equals(parent)) {
@@ -72,7 +73,7 @@ fun bool dfs(Position current, Position parent, Set positionSet, Set visited) {
   return false
 }
 
-fun Collection simulateWhile(Collection visitedPositions, Predicate condition) {
+fun Collection simulateWhile(List<char> grid, Collection visitedPositions, bool saveDirection, Predicate condition) {
   Position direction = UP // we know we always start up
   Position next;
   Position position = startPosition
@@ -80,7 +81,7 @@ fun Collection simulateWhile(Collection visitedPositions, Predicate condition) {
     // not using switch because we need to modify a local variable
     if (grid?[next] == `#`) direction = turn(direction)
     else if (grid?[next] == `.` || grid?[next] == `^`) {
-      visitedPositions << next.withDirection(direction)
+      visitedPositions << (saveDirection ? next.withDirection(direction) : next)
       position = next
     }
   }
