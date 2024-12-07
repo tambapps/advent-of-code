@@ -1,5 +1,7 @@
 import extension Array2dExtension
 import java.util.function.Predicate
+import java.util.concurrent.Future
+import java.util.concurrent.atomic.AtomicInteger
 
 // vectors
 public static final Position UP = new Position(x: 0, y: -1)
@@ -23,22 +25,31 @@ for (String line in Files.readLines('input.txt')) {
 // set because we just want to count unique positions
 println("Part 1: " + simulateWhile(originalGrid, [startPosition] as Set, false) { Position next -> originalGrid?[next] != null }.size())
 
-int cyclePosCount = 0
-for (int y in 0..<Array2dExtension.height) {
-  for (int x in 0..<Array2dExtension.width) {
-    char c = originalGrid[x, y]
-    if (c == `#` || c == `^`) continue
-    List<char> grid = originalGrid.toList()
-    grid[x, y] = `#`
-    List visitedPositions = [startPosition.withDirection(UP)] // list because we want to look for a cycle
-    simulateWhile(grid, visitedPositions, true) { Position next -> grid?[next] != null && !hasCycle(grid, visitedPositions) }
-    if (hasCycle(grid, visitedPositions)) {
-      cyclePosCount++
+// part 2 took 36mn :O
+int cyclePosCount = async {
+  AtomicInteger count = new AtomicInteger()
+  for (int y in 0..<Array2dExtension.height) {
+    for (int x in 0..<Array2dExtension.width) {
+      char c = originalGrid[x, y]
+      if (c == `#` || c == `^`) continue
+      List<char> grid = originalGrid.toList()
+      grid[x, y] = `#`
+      computeIsCyclic(grid, count)
     }
   }
+  await { int completedTasks, int total ->
+    print("\rComputed $completedTasks out of $total configurations")
+  }
+  println()
+  count.get()
 }
 println("Part 2: " + cyclePosCount)
 
+async fun void computeIsCyclic(List<char> grid, AtomicInteger count) {
+  List visitedPositions = [startPosition.withDirection(UP)] // list because we want to look for a cycle
+  simulateWhile(grid, visitedPositions, true) { Position next -> grid?[next] != null && !hasCycle(grid, visitedPositions) }
+  if (hasCycle(grid, visitedPositions)) count.incrementAndGet()
+}
 
 fun bool hasCycle(List<char> grid, List positions) {
   Set positionSet = positions.toSet()
