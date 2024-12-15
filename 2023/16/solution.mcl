@@ -79,7 +79,6 @@ fun char putAt(int x, int y, char c) -> list[y * width + x] = c
 
 @data
 class Beam {
-  // TODO do enum on marcel
   static final int LEFT = 0
   static final int UP = 1
   static final int RIGHT = 2
