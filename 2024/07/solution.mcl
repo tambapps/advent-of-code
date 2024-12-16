@@ -1,0 +1,41 @@
+
+long result1 = 0
+for (String line in Files.readLines('input.txt')) {
+  def (String resultStr, String numbersStr) = line.split(':')
+  long expectedResult = resultStr.toLong()
+  List<long> numbers = numbersStr.trim().split('\\s+').mapToLong { String it -> it.toLong() }
+  if (isSolvable(expectedResult, numbers)) {
+    result1 += expectedResult
+    println(result1)
+  }
+}
+
+println("Part 1: ${result1}")
+
+enum Operator { MUL, ADD }
+
+
+
+fun bool isSolvable(long expectedResult, List<long> numbers, List operators = []) {
+  if (operators.size() == numbers.size() - 1) {
+    return compute(numbers, operators) == expectedResult
+  }
+  return isSolvable(expectedResult, numbers, operators + ([Operator.MUL] as List))
+    || isSolvable(expectedResult, numbers, operators + ([Operator.ADD] as List))
+}
+
+fun long compute(List<long> numbers, List operators) {
+  int nI = 0
+  int oI = 0
+  long result = numbers.getAt<long>(nI++)
+  while (nI < numbers.size()) {
+    long n = numbers.getAt<long>(nI++)
+    result = switch(operators[oI++]) {
+      Operator.MUL -> result * n
+      Operator.ADD -> result + n
+      else -> throw new RuntimeException()
+    }
+  }
+  if(!(nI == numbers.size() && oI == operators.size())) throw new RuntimeException()
+  return result
+}
