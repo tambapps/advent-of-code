@@ -1,27 +1,24 @@
 
 long result1 = 0
+long result2 = 0
 for (String line in Files.readLines('input.txt')) {
   def (String resultStr, String numbersStr) = line.split(':')
   long expectedResult = resultStr.toLong()
   List<long> numbers = numbersStr.trim().split('\\s+').mapToLong { String it -> it.toLong() }
-  if (isSolvable(expectedResult, numbers)) {
-    result1 += expectedResult
-    println(result1)
-  }
+  if (isSolvable(expectedResult, numbers, [Operator.MUL, Operator.ADD])) result1 += expectedResult
+  if (isSolvable(expectedResult, numbers, [Operator.MUL, Operator.ADD, Operator.CONCAT])) result2 += expectedResult
 }
 
-println("Part 1: ${result1}")
+println("Part 1: ${result1}\nPart 2: ${result2}")
 
-enum Operator { MUL, ADD }
+enum Operator { MUL, ADD, CONCAT }
 
 
-
-fun bool isSolvable(long expectedResult, List<long> numbers, List operators = []) {
+fun bool isSolvable(long expectedResult, List<long> numbers, Set operatorsSet = [], List operators = []) {
   if (operators.size() == numbers.size() - 1) {
     return compute(numbers, operators) == expectedResult
   }
-  return isSolvable(expectedResult, numbers, operators + ([Operator.MUL] as List))
-    || isSolvable(expectedResult, numbers, operators + ([Operator.ADD] as List))
+  return operatorsSet.any { Operator op -> isSolvable(expectedResult, numbers, operatorsSet, operators + ([op] as List)) }
 }
 
 fun long compute(List<long> numbers, List operators) {
@@ -33,6 +30,8 @@ fun long compute(List<long> numbers, List operators) {
     result = switch(operators[oI++]) {
       Operator.MUL -> result * n
       Operator.ADD -> result + n
+      Operator.CONCAT -> (String.valueOf(result) + n).toLong()
+      // TODO allow marcel to omit the else clause if the parameter is enum and we iterated over all values
       else -> throw new RuntimeException()
     }
   }
