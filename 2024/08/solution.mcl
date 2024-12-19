@@ -26,7 +26,7 @@ for ((char frequency, List group) in antennas) {
     for (Point interest in pair) {
       for (Point direction in [vector, - vector]) {
         Point candidate = interest
-        while (Character c = grid?[candidate = candidate + direction]) antiNodesPt2 << candidate
+        while (grid?[candidate = candidate + direction] != null) antiNodesPt2 << candidate
       }
     }
   }
